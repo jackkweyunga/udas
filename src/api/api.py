@@ -3,9 +3,9 @@
 
 from django.urls.base import reverse_lazy
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-
+# from rest_framework.response import Response
+# from rest_framework.reverse import reverse
+from django.http import JsonResponse
 
 ## Root API
 
@@ -14,10 +14,12 @@ def api_root(request, format=None):
     """
         A root api view
     """
-    return Response({
+    return JsonResponse({
         "api_version":"1.0.0",
         "documentaion":"_url_"
         },)
+
+        
 
 ## authentication API
 
