@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from typing import cast
+from dj_database_url import parse as db_url
+from decouple import config
+import os
+import datetime
+
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pdn=60+$!!(e+wqsq-ups$artt&!s-qu@2ii9lb!)p-dvi64zh'
+SECRET_KEY = config('DJANGO_SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=1, cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
+SITE_ID = 1
 
 # Application definition
 
@@ -37,17 +45,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # custom
+    'api',
+    'users',
+
+    # rest
+    'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    # extra
+    'corsheaders',
+    'django_extensions',
+    'django.contrib.sites',
+
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # extra
 ]
+
+CSRF_COOKIE_NAME = config("ENV", default="dev")+'-csrftoken'
 
 ROOT_URLCONF = 'auth.urls'
 
@@ -70,14 +100,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'auth.wsgi.application'
 
 
+AUTH_USER_MODEL = 'users.User'
+
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': config(
+        'DATABASE_URL',
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        cast=db_url
+    )
 }
 
 
@@ -105,7 +140,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Dar_es_Salaam'
 
 USE_I18N = True
 
@@ -138,3 +173,41 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 MEDIA_URL = "/media/"
 
 
+
+# JWT settings
+JWT_EXPIRATION_DELTA_DEFAULT = 2.628e+6  # 1 month in seconds
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(
+        seconds=config(
+            'DJANGO_JWT_EXPIRATION_DELTA',
+            default=JWT_EXPIRATION_DELTA_DEFAULT,
+            cast=int
+        )
+    ),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_GET_USER_SECRET_KEY': lambda user: user.secret_key,
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.selectors.jwt_response_payload_handler',
+    'JWT_AUTH_COOKIE': 'jwt_token',
+    'JWT_AUTH_COOKIE_SAMESITE': 'None'
+}
+
+
+# TWILIO settings
+
+TWILIO = {
+    'TWILIO_ACCOUNT_SID': config('TWILIO_ACCOUNT_SID'),
+    'TWILIO_AUTH_TOKEN': config('TWILIO_AUTH_TOKEN'),
+    'SERVICE_ID': config('SERVICE_ID')
+}
+
+
+# CORS settings
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+# dynamic emailing
+# EMAIL_BACKEND = 'janja_auth.email_backend.ConfiguredEmailBackend'
+
+# verification email
+EMAIL_TOKEN_LIFE = 60 * 60
