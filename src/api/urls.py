@@ -1,5 +1,5 @@
 from django.urls import path, include
-
+from api.api import api_root
 
 
 authentication_patterns = [
@@ -46,6 +46,7 @@ urlpatterns = [
     path('auth/', include((authentication_patterns, 'auth'))),
     path('email/', include((email_patterns, 'email'))),
     path('phone/', include((phone_patterns, 'phone'))),
+    path('', api_root, name='api-root'),
 ]
 
 
