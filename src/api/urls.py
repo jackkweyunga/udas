@@ -40,7 +40,7 @@ phone_patterns = [
 
 ]
 
-
+app_name = 'api'
 
 urlpatterns = [
     path('auth/', include((authentication_patterns, 'auth'))),

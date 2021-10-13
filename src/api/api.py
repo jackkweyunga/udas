@@ -1,11 +1,10 @@
 
 # imports
 
+from django.urls.base import reverse_lazy
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
-
 
 
 ## Root API
@@ -16,10 +15,9 @@ def api_root(request, format=None):
         A root api view
     """
     return Response({
-        'auth': reverse('auth', request=request, format=format),
-        'email': reverse('email', request=request, format=format),
-        'phone': reverse('phone', request=request, format=format),
-    })
+        "api_version":"1.0.0",
+        "documentaion":"_url_"
+        },)
 
 ## authentication API
 
