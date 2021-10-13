@@ -8,19 +8,20 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "auth.settings"
 
 django.setup()
 
-# from users.models import User
-from django.contrib.auth.models import User
+from users.models import User
+# from django.contrib.auth.models import User
 
-def createSuperUser( password, username="admin", email = "admin@example.com", firstName = "", lastName = ""):
-
+def createSuperUser( password="changeme", email = "admin@example.com", firstName = "Admin", lastName = "User"):
+    """
+        A function to create a django default super user
+    """
     try:
-        user = User.objects.get(username="admin")
+        user = User.objects.get(email=email)
         return None
     except:
         pass
 
     user = User(
-        username = username,
         email = email,
         first_name = firstName,
         last_name = lastName,
@@ -32,5 +33,5 @@ def createSuperUser( password, username="admin", email = "admin@example.com", fi
 
     return user
 
-createSuperUser("changeme")
+createSuperUser()
 
