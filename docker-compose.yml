@@ -1,0 +1,52 @@
+
+# docker-compose file template for running a django image in ngnix using gunicorm
+
+#### variables
+
+# _envfile --> environment variable file
+# auth --> name of the django app or service
+# 86 --> exposed port
+
+
+# compose version
+version: '3.8'
+
+# services
+services:
+
+  # django api service
+  auth-app:
+    image: janjas/auth
+    restart: unless-stopped
+    volumes:
+      - static_volume:/home/app/src/staticfiles
+      - media_volume:/home/app/src/mediafiles
+    expose:
+      - 8000
+
+  # nginx webserver service
+  auth-ngnix:
+    build: ./nginx
+    restart: unless-stopped
+    volumes:
+      - static_volume:/home/app/src/staticfiles
+      - media_volume:/home/app/src/mediafiles
+    ports:
+      - 86:80
+    depends_on:
+      - auth-app
+
+# the volumes
+volumes:
+  static_volume:
+    name: auth-static_volume
+  media_volume: 
+    name: auth-media_volume
+
+# our default network
+networks:
+  default:
+    external:
+      name: npm
+
+# jek
