@@ -63,7 +63,9 @@ def api_root(request, format=None):
                 "send_verification_email":reverse('api:email:send_verification_email'),
                 "verify_email_otp":reverse('api:email:verify_email_otp'),
                 "send_change_password_otp":reverse('api:email:send_change_password_otp'),
-                "confirm_changed_password":reverse("api:email:confirm_changed_password")
+                "confirm_changed_password":reverse("api:email:confirm_changed_password"),
+                "change_password":reverse("api:email:change_password"),
+
             },
             "phone":{
                 "send_sms":reverse('api:phone:send_sms'),
@@ -159,7 +161,7 @@ class DeactivateUserApiView(APIView):
     """
         Deactivate User Api View
     """
-    
+
     pass
     
 
@@ -274,6 +276,13 @@ class ChangePasswordEmailApiView(APIView):
 class ConfirmChangedPasswordApiView(APIView):
     """
         Confirm Changed Password Api View
+    """
+    pass
+
+# change email
+class ChangeEmailApiView():
+    """
+        Change email Api view
     """
     pass
 

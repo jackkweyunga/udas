@@ -35,8 +35,10 @@ email_patterns = [
     path("send_change_password_otp", ChangePasswordEmailApiView.as_view(), name="send_change_password_otp"),
 
     # confirm changed password with otp
-    path("confirm_changed_password", ConfirmChangedPasswordApiView.as_view(), name="confirm_changed_password")
+    path("confirm_changed_password", ConfirmChangedPasswordApiView.as_view(), name="confirm_changed_password"),
 
+    # change meail 
+    path("change_email", ChangeEmailApiView.as_view(), name="change email"),
 
 ]
 
