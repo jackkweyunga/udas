@@ -4,7 +4,7 @@ from django.db import transaction
 from django.core.management.utils import get_random_secret_key
 from django.contrib.auth.hashers import check_password
 
-from utils import get_now
+from utils.helpers import get_now
 
 from users.models import User
 
@@ -63,13 +63,21 @@ def user_change_secret_key(*, user: User) -> User:
 @transaction.atomic
 def user_get_or_create(*, email: str, **extra_data) -> Tuple[User, bool]:
 
-        user = User.objects.filter(email=email).first()
+    user = User.objects.filter(email=email).first()
 
-        if user:
-            return user, False
+    if user:
+        return user, False
 
-        return user_create(email=email, **extra_data), True
-    
+    return user_create(email=email, **extra_data), True
+
+@transaction.atomic
+def deactivate_user(username):
+    user = User.objects.filter(email=username).first()
+    if user:
+        user.is_active = False
+        user.save()
+        return True
+    return False
 
 @transaction.atomic
 def user_get_full(username):

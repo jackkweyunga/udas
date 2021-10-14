@@ -11,7 +11,7 @@ from rest_framework_jwt.compat import set_cookie_with_token
 # from janja_auth.models import DynamicEmailConfiguration
 
 from users.models import DynamicEmailConfiguration, User
-from utils.services import user_record_login
+from utils.atomic_services import user_record_login
 from django.template.loader import render_to_string
 from utils import SITE
 

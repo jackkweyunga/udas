@@ -1,6 +1,6 @@
 
 # imports
-
+import os
 
 from urllib.parse import urlencode
 from django.templatetags.static import static
@@ -17,15 +17,17 @@ from django.shortcuts import redirect, render
 
 from django.urls.base import reverse_lazy
 from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from rest_framework.reverse import reverse
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from django.http import JsonResponse
 from utils.mixins import *
 from utils.atomic_services import *
 from utils.services import *
-from selectors import *
 from utils.helpers import *
 from utils.selectors import *
+
+# twilio
+from twilio.rest import Client
 
 ## Root API
 
@@ -34,9 +36,31 @@ def api_root(request, format=None):
     """
         A root api view
     """
-    return JsonResponse({
+    return Response({
         "api_version":"1.0.0",
-        "documentaion":"_url_"
+        "documentaion":"_url_",
+        "endpoints":{
+            "auth":{
+                "login":reverse("api:auth:login"),
+                "register":reverse("api:auth:register"),
+                "logged_in_user":reverse("api:auth:me"),
+                "logout":reverse("api:auth:logout"),
+                "deacivate":reverse("api:auth:deactivate")
+            },
+            "email":{
+                "send_email":reverse('api:email:send_email'),
+                "send_verification_email":reverse('api:email:send_verification_email'),
+                "verify_email_otp":reverse('api:email:verify_email_otp'),
+                "send_change_password_otp":reverse('api:email:send_change_password_otp'),
+                "confirm_changed_password":reverse("api:email:confirm_changed_password")
+            },
+            "phone":{
+                "send_sms":reverse('api:phone:send_sms'),
+                "update_phone":reverse('api:phone:update_phone'),
+                "send_otp":reverse('api:phone:send_otp'),
+                "verify_otp":reverse('api:phone:verify_otp')
+            }
+        }
         },)
 
 
@@ -45,7 +69,7 @@ def api_root(request, format=None):
 
 # register user
 class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
-    
+
     """
         User Api View class
     """
@@ -119,31 +143,40 @@ class LogoutUserApiView(ApiAuthMixin, ApiErrorsMixin, APIView):
 
 
 # deactivate user
-class DeactivateUserApiView():
+class DeactivateUserApiView(APIView):
+
     """
         Deactivate User Api View
     """
     pass
+    
 
 
 ## Email API
 
+# send email
+class SendEmailApiView(APIView):
+    """
+        send a custom email
+    """
+    pass
+
 # send email verification msg (otp)
-class SendVerificationEmailApiView():
+class SendVerificationEmailApiView(APIView):
     """
         Send Verification Email Api View
     """
     pass
 
 # verify otp
-class VerifyOTPApiView():
+class VerifyEmailSentOTPApiView(APIView):
     """
         Verify OTP Api View
     """
     pass
 
 # change password email (otp)
-class ChangePasswordEmailApiView():
+class ChangePasswordEmailApiView(APIView):
     """
         Change Password Email Api View
     """
@@ -151,7 +184,7 @@ class ChangePasswordEmailApiView():
 
 
 # confirm changed password with otp
-class ConfirmChangedPasswordApiView():
+class ConfirmChangedPasswordApiView(APIView):
     """
         Confirm Changed Password Api View
     """
@@ -160,23 +193,83 @@ class ConfirmChangedPasswordApiView():
 
 ## Phone API
 
+# send sms
+class SendSMSApiView(APIView):
+
+    """
+        Send sms Api View
+    """
+
+    pass
+
 # update phone number
-class UpdatePhoneNumber():
+class UpdatePhoneNumber(APIView):
     """
         Update Phone Number Api View
     """
     pass
 
 # send otp to verify phone number
-class SendOTPApiView():
+class SendSMSOTPApiView(PublicApiMixin, ApiErrorsMixin, APIView):
     """
         Send OTP Api View
     """
-    pass
+    
+    class SendSerializer(serializers.Serializer):
+        number = serializers.CharField(required=False)
+
+
+    def post(self, request):
+
+        input_serializer = self.SendSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+
+        validated_data = input_serializer.validated_data
+
+        print(validated_data)
+
+        code = validated_data.get('code')
+        type = validated_data.get('type')
+        number = validated_data.get('number')
+
+        account_sid = settings.TWILIO['TWILIO_ACCOUNT_SID']
+        auth_token = settings.TWILIO['TWILIO_AUTH_TOKEN']
+        client = Client(account_sid, auth_token)
+        
+        verification = client.verify \
+            .services(settings.TWILIO["SERVICE_ID"]) \
+            .verifications \
+            .create(to=number, channel='sms')
+        return Response({'status':verification.status})
 
 # verify sent otp
-class VerifySentOTPApiView():
+class VerifySMSSentOTPApiView(PublicApiMixin, ApiErrorsMixin, APIView):
     """
         Verify Sent OTP Api View
     """
-    pass
+    class VerifySerializer(serializers.Serializer):
+        number = serializers.CharField(required=False)
+        code = serializers.CharField(required=False)
+
+    def post(self, request):
+    
+        input_serializer = self.VerifySerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+
+        validated_data = input_serializer.validated_data
+
+        print(validated_data)
+
+        code = validated_data.get('code')
+        type = validated_data.get('type')
+        number = validated_data.get('number')
+
+        account_sid = settings.TWILIO['TWILIO_ACCOUNT_SID']
+        auth_token = settings.TWILIO['TWILIO_AUTH_TOKEN']
+        client = Client(account_sid, auth_token)
+
+        verification_check = client.verify \
+            .services(settings.TWILIO["SERVICE_ID"]) \
+            .verification_checks \
+            .create(to=number, code= code)
+        return Response({'status':verification_check.status})
