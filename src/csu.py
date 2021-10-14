@@ -3,12 +3,12 @@
 from django.conf import settings
 import django
 import os
-from users.models import User
 
 # some settings
 os.environ["DJANGO_SETTINGS_MODULE"] = "auth.settings"
 django.setup()
 
+from users.models import User
 
 
 def createSuperUser( password="changeme", email = "admin@example.com", firstName = "Admin", lastName = "User"):

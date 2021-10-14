@@ -20,8 +20,6 @@ authentication_patterns = [
     path('deactivate/', DeactivateUserApiView.as_view(), name="deactivate")
 ]
 
-
-
 email_patterns = [
 
     # send email
