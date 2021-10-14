@@ -1,25 +1,32 @@
 
-# imports
-import os
+## imports
 
+# builtin
+import os
 from urllib.parse import urlencode
-from django.templatetags.static import static
 from requests.api import post
 
+# rest
 from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_jwt.views import ObtainJSONWebTokenView
-
-from django.urls import reverse
-from django.conf import settings
-from django.shortcuts import redirect, render
-
-from django.urls.base import reverse_lazy
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+
+# rest jwt
+from rest_framework_jwt.views import ObtainJSONWebTokenView
+
+# django
+from django.template import loader
+from django.urls import reverse
+from django.conf import settings
+from django.templatetags.static import static
+from django.shortcuts import redirect, render
+from django.urls.base import reverse_lazy
 from django.http import JsonResponse
+
+# custom
 from utils.mixins import *
 from utils.atomic_services import *
 from utils.services import *
@@ -29,13 +36,17 @@ from utils.selectors import *
 # twilio
 from twilio.rest import Client
 
+
+
 ## Root API
 
 @api_view(['GET'])
 def api_root(request, format=None):
+
     """
         A root api view
     """
+
     return Response({
         "api_version":"1.0.0",
         "documentaion":"_url_",
@@ -148,6 +159,7 @@ class DeactivateUserApiView(APIView):
     """
         Deactivate User Api View
     """
+    
     pass
     
 
@@ -155,18 +167,93 @@ class DeactivateUserApiView(APIView):
 ## Email API
 
 # send email
-class SendEmailApiView(APIView):
+class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
     """
         send a custom email
-    """
-    pass
+    """  
+    class EmailSerializer(serializers.Serializer):
+        subject = serializers.CharField()
+        body = serializers.CharField()
+        recipient_list = serializers.ListField()
+        emailer_name = serializers.CharField(required=False, default='admin')
+
+    def post(self, request):
+
+        serializer = self.EmailSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        validated_data = serializer.validated_data
+
+        emailer_name = validated_data.get('emailer_name') or None
+        config = DynamicEmailConfiguration.objects.filter(email_name="admin").first()
+        
+        if emailer_name != None:
+            config = DynamicEmailConfiguration.objects.filter(email_name=f"{emailer_name}").first()
+            if not config:
+                data = {
+                    'message': f'The name {emailer_name} is not registered as an emailer. Plz visit your developers console to create one.',
+                    'status': status.HTTP_404_NOT_FOUND,
+                    }
+                return Response(data, status=data['status'])
+
+        email = EmailMessage(
+            subject = validated_data.get('subject'),
+            body = validated_data.get('body'),
+            to = validated_data.get('recipient_list'),
+            from_email=config.from_email
+        )  
+
+        email.content_subtype = 'html'
+        email.send()  
+
+        data = {
+        'message': 'Email sent!',
+        'status': status.HTTP_200_OK,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
 
 # send email verification msg (otp)
-class SendVerificationEmailApiView(APIView):
+class SendVerificationEmailApiView(SendEmailApiView):
     """
         Send Verification Email Api View
     """
-    pass
+    class EmailSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+        emailer_name = serializers.CharField(required=False, default='admin')
+
+    def post(self, request):
+        serializer = self.EmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        email = validated_data["email"]
+        otp = generateOTP()
+        # send email
+
+        data = {
+            'message': 'Email sent!',
+            'email': email,
+            'otp': otp,
+            'status': status.HTTP_200_OK,
+        }
+
+        emailer_name = validated_data.get('emailer_name') or None
+        config = DynamicEmailConfiguration.objects.filter(email_name="admin").first()
+
+        msg = EmailMessage(
+            subject="janjas OTP",
+            to=[email],
+            body=loader.render_to_string("email/otp_email.html", context={'otp':otp, "logo":f'{SITE}{static("img/logo-words.png")}'}),
+            from_email=config.from_email
+        )  
+
+        msg.content_subtype = 'html'
+        msg.send()  
+
+        return Response(data, status=status.HTTP_200_OK)
+
 
 # verify otp
 class VerifyEmailSentOTPApiView(APIView):
