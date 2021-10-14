@@ -1,5 +1,5 @@
 from django.urls import path, include
-from api.api import api_root
+from api.api import *
 
 
 authentication_patterns = [
@@ -7,8 +7,10 @@ authentication_patterns = [
     # register user
 
     # login user
+    path('login/', LoginUserApiView.as_view(), name="login")
 
     # get logged in user
+    path('')
 
     # logout user 
 
