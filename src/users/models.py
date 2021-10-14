@@ -1,9 +1,7 @@
-from functools import _Descriptor
-from re import T
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.management.utils import get_random_secret_key
-from django.db.models.base import Model
 
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError

@@ -280,7 +280,7 @@ class ConfirmChangedPasswordApiView(APIView):
     pass
 
 # change email
-class ChangeEmailApiView():
+class ChangeEmailApiView(APIView):
     """
         Change email Api view
     """
@@ -369,3 +369,7 @@ class VerifySMSSentOTPApiView(PublicApiMixin, ApiErrorsMixin, APIView):
             .verification_checks \
             .create(to=number, code= code)
         return Response({'status':verification_check.status})
+
+
+## services API
+
