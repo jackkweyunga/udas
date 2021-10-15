@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from typing import cast
 from dj_database_url import parse as db_url
 from decouple import config
 import os

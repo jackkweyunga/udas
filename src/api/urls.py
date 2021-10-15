@@ -16,6 +16,9 @@ authentication_patterns = [
     # logout user 
     path('logout/', LogoutUserApiView.as_view(), name="logout"),
 
+    # register a non-login user
+    path('register_non_login_user/', RegisterNonLoginUserApiView.as_view(), name="register_non_login_user" ),
+
     # deactivate user
     path('deactivate/', DeactivateUserApiView.as_view(), name="deactivate")
 ]
@@ -38,7 +41,7 @@ email_patterns = [
     path("confirm_changed_password", ConfirmChangedPasswordApiView.as_view(), name="confirm_changed_password"),
 
     # change meail 
-    path("change_email", ChangeEmailApiView.as_view(), name="change email"),
+    path("change_email", ChangeEmailApiView.as_view(), name="change_email"),
 
 ]
 

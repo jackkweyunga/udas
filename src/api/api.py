@@ -56,6 +56,7 @@ def api_root(request, format=None):
                 "register":reverse("api:auth:register"),
                 "logged_in_user":reverse("api:auth:me"),
                 "logout":reverse("api:auth:logout"),
+                "register_non_login_user":reverse("api:auth:register_non_login_user"),
                 "deacivate":reverse("api:auth:deactivate")
             },
             "email":{
@@ -64,7 +65,7 @@ def api_root(request, format=None):
                 "verify_email_otp":reverse('api:email:verify_email_otp'),
                 "send_change_password_otp":reverse('api:email:send_change_password_otp'),
                 "confirm_changed_password":reverse("api:email:confirm_changed_password"),
-                "change_password":reverse("api:email:change_password"),
+                "change_email":reverse("api:email:change_email"),
 
             },
             "phone":{
@@ -79,6 +80,13 @@ def api_root(request, format=None):
 
 
 ## authentication API
+
+# register non login user
+class RegisterNonLoginUserApiView(APIView):
+    """
+        Api view to register users who dont need to login \n
+        Such as customers, Lenders, So on
+    """
 
 # register user
 class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
