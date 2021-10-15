@@ -52,31 +52,30 @@ def api_root(request, format=None):
         "documentaion":"_url_",
         "endpoints":{
             "auth":{
-                "login":reverse("api:auth:login"),
-                "register":reverse("api:auth:register"),
-                "logged_in_user":reverse("api:auth:me"),
-                "logout":reverse("api:auth:logout"),
-                "register_non_login_user":reverse("api:auth:register_non_login_user"),
-                "deacivate":reverse("api:auth:deactivate")
+                "login":request.build_absolute_uri(reverse("api:auth:login")),
+                "register":request.build_absolute_uri(reverse("api:auth:register")),
+                "logged_in_user":request.build_absolute_uri(reverse("api:auth:me")),
+                "logout":request.build_absolute_uri(reverse("api:auth:logout")),
+                "register_non_login_user":request.build_absolute_uri(reverse("api:auth:register_non_login_user")),
+                "deacivate":request.build_absolute_uri(reverse("api:auth:deactivate"))
             },
             "email":{
-                "send_email":reverse('api:email:send_email'),
-                "send_verification_email":reverse('api:email:send_verification_email'),
-                "verify_email_otp":reverse('api:email:verify_email_otp'),
-                "send_change_password_otp":reverse('api:email:send_change_password_otp'),
-                "confirm_changed_password":reverse("api:email:confirm_changed_password"),
-                "change_email":reverse("api:email:change_email"),
+                "send_email":request.build_absolute_uri(reverse('api:email:send_email')),
+                "send_verification_email":request.build_absolute_uri(reverse('api:email:send_verification_email')),
+                "verify_email_otp":request.build_absolute_uri(reverse('api:email:verify_email_otp')),
+                "send_change_password_otp":request.build_absolute_uri(reverse('api:email:send_change_password_otp')),
+                "confirm_changed_password":request.build_absolute_uri(reverse("api:email:confirm_changed_password")),
+                "change_email":request.build_absolute_uri(reverse("api:email:change_email")),
 
             },
             "phone":{
-                "send_sms":reverse('api:phone:send_sms'),
-                "update_phone":reverse('api:phone:update_phone'),
-                "send_otp":reverse('api:phone:send_otp'),
-                "verify_otp":reverse('api:phone:verify_otp')
+                "send_sms":request.build_absolute_uri(reverse('api:phone:send_sms')),
+                "update_phone":request.build_absolute_uri(reverse('api:phone:update_phone')),
+                "send_otp":request.build_absolute_uri(reverse('api:phone:send_otp')),
+                "verify_otp":request.build_absolute_uri(reverse('api:phone:verify_otp'))
             }
         }
         },)
-
 
 
 ## authentication API
