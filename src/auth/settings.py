@@ -62,6 +62,8 @@ INSTALLED_APPS = [
 
 ]
 
+APPEND_SLASH=False
+
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -192,7 +194,7 @@ JWT_AUTH = {
     ),
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
     'JWT_GET_USER_SECRET_KEY': lambda user: user.secret_key,
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.selectors.jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'utils.selectors.jwt_response_payload_handler',
     'JWT_AUTH_COOKIE': 'jwt_token',
     'JWT_AUTH_COOKIE_SAMESITE': 'None'
 }

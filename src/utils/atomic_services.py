@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password
 
 from utils.helpers import get_now
 
-from users.models import User
+from users.models import Service, ServiceUser, User
 
 
 def user_create(email, password=None, **extra_fields) -> User:
@@ -71,6 +71,22 @@ def user_get_or_create(*, email: str, **extra_data) -> Tuple[User, bool]:
     return user_create(email=email, **extra_data), True
 
 @transaction.atomic
+def user_before_create(*, email: str, **extra_data) -> Tuple[User, bool]:
+
+    user = User.objects.filter(email=email).first()
+    phone = User.objects.filter(phone=extra_data["phone"]).first()
+
+    if user:
+        return None, False
+
+    if phone:
+        return "phone exists", False
+
+    return user_create(email=email, **extra_data), True
+
+
+
+@transaction.atomic
 def deactivate_user(username):
     user = User.objects.filter(email=username).first()
     if user:
@@ -118,8 +134,27 @@ def user_add_password(data):
         return user
     except:
         return None
-
-
-
-
         
+
+@transaction.atomic
+def add_service_user(user: User, service_id):
+
+    service = Service.objects.filter(service_id=service_id).first()
+    if service:
+        service_user = ServiceUser(user=user, service=service)
+        service_user.save()
+        return True
+    return False
+
+@transaction.atomic
+def remove_service_user(user: User, service_id):
+
+    service = Service.objects.filter(service_id=service_id).first()
+    if service:
+        service_user = ServiceUser.objects.filter(service=service, user=user).first()
+        if service_user:
+            service_user.delete()
+            return True
+        else:
+            return "user not in service"
+    return False

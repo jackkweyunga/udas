@@ -9,6 +9,19 @@ from django.utils.text import slugify
 
 import uuid
 
+
+"""
+User
+DynamicEmailConfiguration
+
+Service
+ServicePackage
+PackageFeatures
+ServiceUser
+ServiceUserSubscription
+
+"""
+
 class User(AbstractUser):
 
     """
@@ -37,7 +50,6 @@ class User(AbstractUser):
             return self.first_name.capitalize()
 
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
-
 
 
 class DynamicEmailConfiguration(models.Model):
@@ -90,11 +102,12 @@ class DynamicEmailConfiguration(models.Model):
         super(DynamicEmailConfiguration, self).save(*args, **kwargs)
 
     def __str__(self):
-        return _(f"{self.slug}")
+        return _(f"{self.slug} - {self.from_email}")
 
     class Meta:
         verbose_name = _("Email Configuration")
 
+####### services models
 
 # microservices using the api
 class Service(models.Model):
@@ -107,6 +120,9 @@ class Service(models.Model):
     def refresh_key(self):
         self.service_key = uuid.uuid4()
 
+    def __str__(self) -> str:
+        return f"{self.service_id} - {self.service_key}"
+
 
 class ServicePackage(models.Model):
     """
@@ -115,6 +131,9 @@ class ServicePackage(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
 
 # package features
@@ -125,6 +144,8 @@ class PackageFeatures(models.Model):
     package = models.ForeignKey(ServicePackage, related_name="features", verbose_name="package", on_delete=models.CASCADE)
     feature = models.TextField()
 
+    def __str__(self) -> str:
+        return f"{self.package.name} - {self.id}"
 
 # miccroservice Users.
 class ServiceUser(models.Model):
@@ -132,6 +153,10 @@ class ServiceUser(models.Model):
         Service user model
     """
     user = models.ForeignKey(User, related_name="services", verbose_name="user", on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, related_name="service_users", verbose_name="service", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.service.service_id} - {self.user.email} - {self.user.name}"
 
 class ServiceUserSubscription(models.Model):
     """
@@ -140,5 +165,6 @@ class ServiceUserSubscription(models.Model):
     user = models.ForeignKey(User, related_name="subscriptions", verbose_name="subscriber", on_delete=models.CASCADE)
     package = models.ForeignKey(ServicePackage, related_name="package_users", verbose_name="package", on_delete=models.CASCADE)
 
-
+    def __str__(self) -> str:
+        return f"{self.user.email} - {self.package.name}"
 

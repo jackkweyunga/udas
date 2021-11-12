@@ -57,7 +57,8 @@ def api_root(request, format=None):
                 "logged_in_user":request.build_absolute_uri(reverse("api:auth:me")),
                 "logout":request.build_absolute_uri(reverse("api:auth:logout")),
                 "register_non_login_user":request.build_absolute_uri(reverse("api:auth:register_non_login_user")),
-                "deacivate":request.build_absolute_uri(reverse("api:auth:deactivate"))
+                "deacivate":request.build_absolute_uri(reverse("api:auth:deactivate")),
+                "acivate":request.build_absolute_uri(reverse("api:auth:activate"))
             },
             "email":{
                 "send_email":request.build_absolute_uri(reverse('api:email:send_email')),
@@ -95,11 +96,13 @@ class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
     """
     
     class InputSerializer(serializers.Serializer):
+        services = serializers.ListField()
         email = serializers.EmailField()
         phone = serializers.CharField()
-        first_name = serializers.CharField(required=False, default='')
-        last_name = serializers.CharField(required=False, default='')
+        first_name = serializers.CharField()
+        last_name = serializers.CharField()
         password = serializers.CharField()
+
 
     def post(self, request, *args, **kwargs):
 
@@ -108,9 +111,23 @@ class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
 
         # We use get-or-create logic here for the sake of the example.
         # We don't have a sign-up flow.
-        user, _ = user_get_or_create(**serializer.validated_data)
+        user, _ = user_before_create(**serializer.validated_data)
+        if user == None:
+            response = Response(data={
+                "error":"user with this email exists"
+            })
+            return response
 
-        response = Response(data=user_get_me(user=user))
+        if user == "phone exists":
+            response = Response(data={
+                "error":"user with this phone exists"
+            })
+            return response
+
+        response = Response(data={
+            "user":user_get_me(user=user),
+            "services":[]
+        })
         response = jwt_login(response=response, user=user)
 
         return response
@@ -169,7 +186,58 @@ class DeactivateUserApiView(APIView):
         Deactivate User Api View
     """
 
-    pass
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+    def post(self, request):
+
+        ser = self.InputSerializer(data = request.data)
+        data = ser.is_valid(raise_exception=True)
+
+        if data:
+            email = ser.validated_data["email"]
+            user = User.objects.filter(email=email).first()
+
+            if user:
+                user.is_active = False
+                user.save()
+                response = Response(data={"message"f"user with email {email} has been deactivaed"})
+                return response
+
+            response = Response(data={"error":"the email is not registered"})
+
+            return response
+
+
+# activate user
+class ActivateUserApiView(APIView):
+
+    """
+        Activate User Api View
+    """
+
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+    def post(self, request):
+
+        ser = self.InputSerializer(data = request.data)
+        data = ser.is_valid(raise_exception=True)
+        # print(data)
+
+        if data:
+            email = ser.validated_data.get("email")
+            user = User.objects.filter(email=email).first()
+            # print(user, email)
+            if user:
+                user.is_active = True
+                user.save()
+                response = Response(data={"message"f"user with email {email} has been activated"})
+                return response
+      
+            response = Response(data={"error":"the email is not registered"})
+
+            return response
     
 
 

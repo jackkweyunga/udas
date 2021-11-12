@@ -56,3 +56,15 @@ class DynamicEmailConfigurationAdmin(admin.ModelAdmin):
         }
 
 admin.site.register(DynamicEmailConfiguration, DynamicEmailConfigurationAdmin)
+
+
+admin.site.register([
+    Service,
+    ServicePackage,
+    PackageFeatures,
+    ServiceUser,
+    ServiceUserSubscription
+])
+
+
+

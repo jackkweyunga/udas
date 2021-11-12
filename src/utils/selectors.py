@@ -1,11 +1,18 @@
 from users.models import User
 
 
+def user_get_services(user: User):
+    all = {}
+    for i in  user.services.all():
+        all[i.service.service_id] = i.service.service_key
+    return all
+
 def user_get_me(*, user: User):
     return {
         'id': user.id,
         'name': user.name,
-        'email': user.email
+        'email': user.email,
+        'services':user_get_services(user)
     }
 
 

@@ -20,7 +20,10 @@ authentication_patterns = [
     path('register_non_login_user/', RegisterNonLoginUserApiView.as_view(), name="register_non_login_user" ),
 
     # deactivate user
-    path('deactivate/', DeactivateUserApiView.as_view(), name="deactivate")
+    path('deactivate/', DeactivateUserApiView.as_view(), name="deactivate"),
+
+    # activate user
+    path('activate/', ActivateUserApiView.as_view(), name="activate")
 ]
 
 email_patterns = [
