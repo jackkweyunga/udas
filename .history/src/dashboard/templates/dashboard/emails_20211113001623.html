@@ -1,0 +1,75 @@
+{% extends 'dashboard/auth_base.html' %}
+
+
+
+
+
+
+{% block main %}
+
+<div class="container">
+
+
+    <nav class="nav bg-white nav-list">
+        <div class="container p-2">
+            <a href="#!" class="shadow-sm btn-sm btn-outline-primary p-2">
+                <i class="bi bi-plus"></i>
+                Add Email
+            </a>
+            <a role="button" href="#!" class="shadow-sm btn-sm btn-outline-primary p-2">
+                <i class="bi bi-send"></i>
+                send Email
+            </a>
+        </div>
+    </nav>
+
+    <table id="emails-list" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Host</th>
+                <th>From_email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ email.email_name}}</td>
+                <td>{{ email.slug}}</td>
+                <td>{{ email.host}}</td>
+                <td>{{ email.from_email}}</td>
+                <td>{{ email.username}}</td>
+                <td>
+                    i.bi
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </tfoot>
+    </table>
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function() {
+    $('#emails-list').DataTable();
+} );
+</script>
+
+{% endblock %}
