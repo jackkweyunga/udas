@@ -1,0 +1,30 @@
+{% extends "dashboard/base.html"%}
+
+{% block content %}
+
+<div class="container h-100 w-100 d-flex m-3 flex-column justify-content-center align-items-center">
+    <h1 class="text-white">Login</h1>
+    <form action="{% url 'login'%}" class="form bg-white p-3 m-3" method="post" style="max-width: 420px;min-width: 320px;">
+        
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="" class="form-label">username</label>
+            <input type="text" name="username" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <small id="helpId" class="text-muted">Help text</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="" class="form-label">password</label>
+            <input type="password" name="password" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <small id="helpId" class="text-muted">Help text</small>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">LOGIN</button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
