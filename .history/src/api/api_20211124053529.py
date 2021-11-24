@@ -422,7 +422,7 @@ class SendSMSOTPApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         Post template
         
         {
-            "number":"+255"
+            "number
         }
     """
     

@@ -420,10 +420,6 @@ class SendSMSOTPApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         Send OTP Api View
         
         Post template
-        
-        {
-            "number":"+255"
-        }
     """
     
     class SendSerializer(serializers.Serializer):
