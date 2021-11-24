@@ -279,8 +279,6 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
             "recipient_list":[""],
             "emailer_name":"admin"
         }
-        
-        
     """  
     class EmailSerializer(serializers.Serializer):
         subject = serializers.CharField()

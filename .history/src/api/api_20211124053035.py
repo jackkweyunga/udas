@@ -272,7 +272,7 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         send a custom email
         
         Post template 
-        
+        <h1>
         {
             "subject":"",
             "body":"",

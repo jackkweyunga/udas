@@ -268,10 +268,8 @@ class ActivateUserApiView(APIView):
 
 # send email
 class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
-    """
+    f"""
         send a custom email
-        
-        Post template 
         
         {
             "subject":"",
@@ -279,8 +277,6 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
             "recipient_list":[""],
             "emailer_name":"admin"
         }
-        
-        
     """  
     class EmailSerializer(serializers.Serializer):
         subject = serializers.CharField()

@@ -274,13 +274,11 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         Post template 
         
         {
-            "subject":"",
+            \t"subject":"",
             "body":"",
             "recipient_list":[""],
             "emailer_name":"admin"
         }
-        
-        
     """  
     class EmailSerializer(serializers.Serializer):
         subject = serializers.CharField()
