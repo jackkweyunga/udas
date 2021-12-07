@@ -1,0 +1,90 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+
+{% block main %}
+
+<div class="container bg-light card">
+
+
+    <nav class="nav nav-list mb-2">
+        <div class="container p-0 shadow-sm">
+            <a href="#!" class="text-dark m-0 shadow-sm btn btn-sm p-2">
+                <i class="bi bi-plus"></i>
+                Add User
+            </a>
+            
+            <span class="">
+                    {{count}} - user(s)
+            </span>
+        </div>
+    </nav>
+
+    <table id="users-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+        <thead>
+            <tr>
+                <th>email</th>
+                <th>username</th>
+                <th>fistmane</th>
+                <th>lastname</th>
+                <th>IsAdmin</th>
+                <th>Active</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.email}}</td>
+                <td>{{user.username}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td>{{user.is_superuser}}</td>
+                <td>{{user.is_active}}</td>
+                <td>{{user.last_login}}</td>
+                
+                <td>
+                    <button class="btn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn">
+                        <i class="bi bi-pen"></i>
+                    </button>
+                    <a href="{% url 'user' email.id %}" class="btn">
+                        <i data-feather="corner-up-right"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>email</th>
+                <th>username</th>
+                <th>fistmane</th>
+                <th>lastname</th>
+                <th>IsAdmin</th>
+                <th>Active</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+            </tr>
+        </tfoot>
+    </table>
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function() {
+    $('#users-list').DataTable();
+} );
+</script>
+
+{% endblock %}
