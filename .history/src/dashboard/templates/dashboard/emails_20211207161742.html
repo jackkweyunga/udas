@@ -1,0 +1,127 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container bg-light">
+
+
+    <nav class="nav nav-list py-2">
+        <div class="container">
+            <a href="#!" class=" m-0 shadow-sm btn btn-sm btn-primary p-2">
+                <i class="bi bi-plus mx-2"></i>
+                Add Email
+            </a>
+            <a href="#!" class="m-0 shadow-sm btn btn-sm btn-primary p-2">
+                <i class="bi bi-envelope mx-2"></i>
+                send Email
+            </a>
+            <span class=""></span>
+            <span class=" badge bg-primary text-white">
+                {{count}} - email(s)
+            </span>
+        </div>
+    </nav>
+
+    <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Host</th>
+                <th>From_email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email in emails %}
+            <tr>
+                <td>{{ email.email_name}}</td>
+                <td>{{ email.slug}}</td>
+                <td>{{ email.host}}</td>
+                <td>{{ email.from_email}}</td>
+                <td>{{ email.username}}</td>
+                <td>
+                    <button class="btn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn">
+                        <i class="bi bi-pen"></i>
+                    </button>
+                    <a href="{% url 'email' email.id %}" class="btn">
+                        <i data-feather="corner-up-right"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Host</th>
+                <th>From_email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </tfoot>
+    </table>
+
+
+</div>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modelId">
+    Launch
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Email Configurations</h5>
+                <button type="button" class="btn-close btn btn-icon" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="minimize"></i>
+                </button>
+
+            </div>
+            <form action="{% url 'emails' %}" method="post">
+                <div class="modal-body">
+                    <input type="text" placeholder="name or id | uni" class="form-control mb-3" name="email_name" id="">
+                    <input type="text" placeholder="email" class="form-control mb-3" name="username" id="">
+                    <input type="text" placeholder="from name" class="form-control mb-3" name="from_email" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                    <input type="text" class="form-control mb-3" name="" id="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}
