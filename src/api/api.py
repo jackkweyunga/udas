@@ -273,7 +273,11 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         
         {
             "subject":"",
-            "body":"",
+            "body": [
+                "p> A paragraph \n",
+                "a> a link t>> link text \n",
+                "b> a link button t>> link text \n"
+            ]
             "recipient_list":[""],
             "emailer_name":"admin",
             "api_key":"the key here"
@@ -283,7 +287,8 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
     """  
     class EmailSerializer(serializers.Serializer):
         subject = serializers.CharField()
-        body = serializers.CharField()
+        body = serializers.ListField()
+        template_type = serializers.CharField()
         recipient_list = serializers.ListField()
         emailer_name = serializers.CharField(required=False, default='admin')
         api_key = serializers.CharField()
@@ -308,13 +313,95 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
                     }
                 return Response(data, status=data['status'])
 
-        email = EmailMessage(
-            subject = validated_data.get('subject'),
-            body = validated_data.get('body'),
-            to = validated_data.get('recipient_list'),
-            from_email=config.from_email,
-            email_name=emailer_name
-        )
+        to = validated_data.get('recipient_list')
+        template_type = validated_data.get('template_type')
+        email_body = validated_data.get('body')
+        
+        EMAIL_TEMPLATE_TYPES = {
+            "follow_up": "email/custom_templates/follow_up_email_template.html"
+        }
+        
+        EMAIL_BODY_SYNTAX = {
+                    "p>":["<p>","**","</p>"],
+                    "a>":["<a href='","****","'>","**","</a>"],
+                    "b>":["<a href='","****","'><button style='padding:10px;border-radius:10px;cursor:pointer;background:#0061f2;color:#ffffff;'>","**","</button></a>"],
+                    "span>":["<span>","**","</span>"],
+                }
+                
+                
+        new  = []
+        for i in email_body:
+            
+            k = i
+            
+            for key in EMAIL_BODY_SYNTAX.keys():
+                
+                all_tags = [f"<{m}" for m in EMAIL_BODY_SYNTAX.keys() ]
+                
+                if len(i.strip().split(key)) > 1:
+                                        
+                    # check for duplicates
+                    if i.strip().split(key)[0] in all_tags:
+                        print(i.strip().split(key)[0])
+                        
+                    else:
+                        tt = i.strip().split(key)[1]
+                        print(" was here", EMAIL_BODY_SYNTAX[key])
+                        ind = EMAIL_BODY_SYNTAX[key].index("**")
+                        print(ind)
+                        kk = [ v for v in EMAIL_BODY_SYNTAX[key]]
+                        kk[ind] = tt
+                        ii = "".join(kk) 
+                        
+                        if f"<{key}" in ["<a>","<b>"]:
+                            if len(k.split("href>")) > 1:
+                                _tt = k.split("href>")[1].strip()
+                                print(tt, _tt)
+                                kk[ind] = tt.split(f"href> {_tt}")[0]
+                                ii = "".join(kk) 
+                                href_pos = ii.split("****")
+                                href_pos.insert(1,_tt)
+                                ii = "".join(href_pos) 
+                            
+                            
+                        
+                elif len(i.split(key)) == 1:
+                    if i.split("<p>")[0] == " " and i.split(key)[0] not in all_tags:
+                        ii = "".join(["<p>",f"{i}","</p>"])
+                
+            k = None
+            new.append(ii)
+                    
+        email_body = "\n".join(new)
+
+    
+        if len(to) == 1 and EMAIL_TEMPLATE_TYPES[template_type]:
+            
+            email = EmailMessage(
+                subject = validated_data.get('subject'),
+                body = loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"name":f"{to[0]}", "email_name":f"{emailer_name}", "body":email_body }),
+                to = to,
+                from_email=config.from_email,
+                email_name=emailer_name
+            )
+            
+            # example
+        """
+            {
+            "subject":"Testing",
+            "body": [
+            "p> Hello",
+            "p> You are receing this email as a test. Using a simple syntax, links and buttons cab be encorporated in emails via the janjas api.",
+            "b> This is a link button to janjas.tk href> https://janjas.tk",
+            "p> Below is a link",
+            "a> This is a link to janjas.tk href> https://janjas.tk"
+            ],
+            "recipient_list":["jackkweyunga@gmail.com"],
+            "emailer_name":"udictihub",
+            "template_type":"follow_up",
+            "api_key":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5MzAyNzk5LCJleHAiOjE2NDE5MzA3OTksImp0aSI6ImZlNjllNTAyLWU2MGQtNDY3Mi1hNjkyLTk3YTg0ODE4ZDA4NSIsInVzZXJfaWQiOjEsIm9yaWdfaWF0IjoxNjM5MzAyNzk5fQ.JPVsFaOz7XjumqyTdWqDqUciSdJQzRH8LEX5swtPkwRMAxwXdI5SbKGWV1bDPVxJ7B6D3teW5rfk71lu0N8FutqCGicXnwreCQLNqLIyJgpkjxEm3KoZx2beFj1x5cvsDdZJnK8hWv4pBuiMvjmmqkDDaOpXLvZPHTIKslKU2S7_kGB96v63hRJppztnwsBLBYXifiwSL-PMZ6qJ5IORo81U_EiVRBmmMNDgftaRN5riWSYiEqmpYbmENq5t23EKEG-PA-HnhDaro2U5y96DMJy_TkjwgOHwn1dAGiBASoh3PHqEFVN9DLvIhW43YtIKnGDCt7vOYeVU143_JiKAbQ"
+            }
+        """
 
         email.content_subtype = 'html'
         
