@@ -332,8 +332,8 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         new  = []
         for i in email_body:
             
-            k = i
-            
+            ii = i
+            k =i
             for key in EMAIL_BODY_SYNTAX.keys():
                 
                 all_tags = [f"<{m}" for m in EMAIL_BODY_SYNTAX.keys() ]
@@ -368,7 +368,6 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
                 elif len(i.split(key)) == 1:
                     if i.split("<p>")[0] == " " and i.split(key)[0] not in all_tags:
                         ii = "".join(["<p>",f"{i}","</p>"])
-                
             k = None
             new.append(ii)
                     
