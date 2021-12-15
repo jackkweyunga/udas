@@ -53,6 +53,16 @@ USER janjas
 
 # initial commands
 # depend on the database --> never to be run alone. use docker-compose
-CMD source ./env/bin/activate && python manage.py collectstatic -v 2 --noinput && python manage.py makemigrations && python manage.py migrate && python csu.py && gunicorn auth.wsgi:application --bind 0.0.0.0:8000
+
+CMD source ./env/bin/activate \
+    && python manage.py collectstatic -v 2 --noinput \
+    && python manage.py makemigrations \
+    && python manage.py migrate \
+    && python csu.py \
+    && gunicorn auth.wsgi:application \
+        --workers 5 \
+        --timeout 3600000 \
+        --log-level=debug \
+        --bind 0.0.0.0:8000 
 
 # jek
