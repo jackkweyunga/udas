@@ -5,12 +5,12 @@
 
 {% block main %}
 
-<div class="container bg-light card">
+<div class="container bg-light">
 
 
     <nav class="nav nav-list mb-2">
-        <div class="container p-0 shadow-sm">
-            <button style="background-color: #443EA2;" class="shadow-sm text-white btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#addService">
+        <div class="container p-0 d-flex justify-content-between align-items-center ">
+            <button class="shadow-sm btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#addService">
                 <i class="bi bi-plus"></i>
                 register a service
             </button>
@@ -21,7 +21,7 @@
         </div>
     </nav>
 
-    <table id="services-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+    <table id="services-list" class="table bg-white" style="width:100%">
         <thead>
             <tr>
                 <th>id</th>
@@ -38,12 +38,10 @@
                     <a href="{% url 'services-delete' service.id%}" class="btn">
                         <i class="bi bi-trash"></i>
                     </a>
-                    <button data-bs-toggle="modal" data-bs-target="#editService{{service.service_id}}" class="btn">
-                        <i class="bi bi-pen"></i>
-                    </button>
+                    <i class="bi bi-pen" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#editService{{service.service_id}}"></i>
                     <!-- Modal -->
-                    <div class="modal fade" id="editService{{service.service_id}}" tabindex="-1" role="dialog" aria-labelledby="editService{{service.service_id}}"
-                        aria-hidden="true">
+                    <div class="modal fade" id="editService{{service.service_id}}" tabindex="-1" role="dialog"
+                        aria-labelledby="editService{{service.service_id}}" aria-hidden="true">
                         <div class="modal-dialog modal-sm" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -56,7 +54,8 @@
                                     <div class="modal-body">
                                         <div class="input-group">
                                             <label for="" class="input-group-text">id</label>
-                                            <input type="text" name="id" value="{{service.service_id}}" class="form-control">
+                                            <input type="text" name="id" value="{{service.service_id}}"
+                                                class="form-control">
                                         </div>
                                     </div>
                                     <div class="modal-footer">

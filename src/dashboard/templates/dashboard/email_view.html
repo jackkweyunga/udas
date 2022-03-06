@@ -40,9 +40,8 @@
 
             <div class="card mt-3">
                 <div class="card-body">
-                    api_key 
-                    <hr>
-                    <textarea class="form-control" rows=10 name="api_key" id="">{{ email.api_key }}</textarea>
+                    <small>email_key</small>
+                    <input type="text" class="form-control mt-1" value="{{email.email_key}}">
                 </div>
             </div>
         </div>
@@ -88,7 +87,7 @@
 
             <hr>
             <h4> Email Logs </h4>
-            <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+            <table id="emails-list" class="table bg-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>Name</th>

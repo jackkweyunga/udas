@@ -42,16 +42,6 @@ def jwt_login(*, response: HttpResponse, user: User) -> HttpResponse:
     return response
 
 
-def create_email_auth_token(user):
-    
-    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-    
-    payload = jwt_payload_handler(user)
-    token = jwt_encode_handler(payload)
-    
-    return token
-
 
 # send email for verification
 def send_email_for_verification(user, thread=True, **kwargs):

@@ -1,29 +1,90 @@
+<table width="100%" height="100%" style="min-width:348px" border="0" cellspacing="0" cellpadding="0" lang="en">
+    <tbody>
+        <tr height="32" style="height:32px">
+            <td></td>
+        </tr>
+        <tr align="center">
+            <td>
+                <div>
+                    <div></div>
+                </div>
+                <table border="0" cellspacing="0" cellpadding="0"
+                    style="padding-bottom:20px;max-width:516px;min-width:220px">
+                    <tbody>
+                        <tr>
+                            <td width="8" style="width:8px"></td>
+                            <td>
+                                <div style="border-style:solid;border-width:thin;border-color:#dadce0;border-radius:8px;padding:40px 20px"
+                                    align="center" class="m_-8739555827287931345mdv2rw">
 
+                                    {% if logo_url %}
+                                    <img src="{{ logo_url }}" width="74" height="74" aria-hidden="true"
+                                        style="margin-bottom:16px" alt="{{ email_name }}" class="CToWUd">
+                                    {% endif %}
+                                    <div
+                                        style="font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom:thin solid #dadce0;color:rgba(0,0,0,0.87);line-height:32px;padding-bottom:24px;text-align:center;word-break:break-word">
+
+                                        {% autoescape off %}
+                                        {{ body }}
+                                        {% endautoescape%}
+
+                                    </div>
+                                    <div style="padding-top:20px;font-size:12px;line-height:16px;color:#5f6368;letter-spacing:0.3px;text-align:center">
+                                        Regards from {{ email_name }} <br>
+                                        <a style="color:rgba(0,0,0,0.87);text-decoration:inherit">{{ website }}<wbr></a>
+                                    </div>
+                                </div>
+                                <div style="text-align:left">
+                                    <div style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
+                                        <div> {{ reason }}</div>
+                                        <div style="direction:ltr">
+                                            Powered by 
+                                            <a class="m_-8739555827287931345afal" style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
+                                                janjas
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td width="8" style="width:8px"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr height="32" style="height:32px">
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- 
 <!DOCTYPE html>
 <html lang="en">
-<body style="width: 100%;padding: 10px;font-family: Arial, Helvetica, sans-serif;display: flex;justify-content: center;align-items: center;">
+
+<body
+    style="width: 100%;padding: 10px;font-family: Arial, Helvetica, sans-serif;display: flex;justify-content: center;align-items: center;">
 
     <table style="width: 100%;">
         <tbody>
-            
+
             <p>
-                {% autoescape off %}
-                    {{ body }}
-                {% endautoescape%}
+                
             </p>
 
             <p>Regards</p>
             <h4>{{ email_name }}</h4>
-            
+
         </tbody>
         <tfoot style="padding-top: 20px;">
-            
+
             <center>
                 powered by janjas
             </center>
-            
+
         </tfoot>
     </table>
 
 </body>
-</html>
+
+</html> -->

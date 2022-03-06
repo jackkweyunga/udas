@@ -3,6 +3,7 @@
 
 # builtin
 import os
+from pyexpat import model
 from urllib.parse import urlencode
 from requests.api import post
 import random
@@ -24,14 +25,16 @@ from django.urls import reverse
 from django.conf import settings
 from django.templatetags.static import static
 from django.urls.base import reverse_lazy
+from api.tasks import send_email, add
+from auth.celery import debug_task
 
 # custom
 from utils.mixins import PublicApiMixin, ApiAuthMixin, ApiErrorsMixin
-from utils.atomic_services import user_before_create, user_change_secret_key
+from utils.atomic_services import log, user_before_create, user_change_secret_key
 from utils.services import jwt_login, user_record_login, SITE
 from utils.helpers import generateOTP
 from utils.selectors import user_get_me
-from users.models import RSAPair
+from users.models import RSAPair, SystemLogs
 from users.models import User, DynamicEmailConfiguration
 from utils.mail import EmailMessage
 
@@ -107,6 +110,7 @@ class RegisterNonLoginUserApiView(APIView):
         Api view to register users who dont need to login \n
         Such as customers, Lenders, So on
     """
+
 
 # register user
 class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
@@ -266,6 +270,7 @@ class ActivateUserApiView(APIView):
 
 # send email
 class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
+    
     """
         send a custom email
         
@@ -273,25 +278,22 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         
         {
             "subject":"",
-            "body": [
-                "p> A paragraph \n",
-                "a> a link t>> link text \n",
-                "b> a link button t>> link text \n"
-            ]
+            "body": "",
             "recipient_list":[""],
-            "emailer_name":"admin",
-            "api_key":"the key here"
+            "template_type":"",
+            "email_name":"admin",
+            "email_key":"the key here"
         }
         
         
     """  
     class EmailSerializer(serializers.Serializer):
         subject = serializers.CharField()
-        body = serializers.ListField()
-        template_type = serializers.CharField()
+        body = serializers.CharField()
+        template_type = serializers.CharField(required=False, default="follow_up")
         recipient_list = serializers.ListField()
-        emailer_name = serializers.CharField(required=False, default='admin')
-        api_key = serializers.CharField()
+        email_name = serializers.CharField(required=False, default='admin')
+        email_key = serializers.CharField()
 
     def post(self, request):
 
@@ -300,124 +302,54 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
 
         validated_data = serializer.validated_data
 
-        emailer_name = validated_data.get('emailer_name') or None
-        key = validated_data.get('api_key') or None
+        email_name = validated_data.get('email_name') or None
+        key = validated_data.get('email_key') or None
         config = DynamicEmailConfiguration.objects.filter(email_name="admin").first()
         
-        if emailer_name != None:
-            config = DynamicEmailConfiguration.objects.filter(email_name=f"{emailer_name}", api_key=key).first()
+        if email_name != None:
+            config = DynamicEmailConfiguration.objects.filter(email_name=f"{email_name}", email_key=key).first()
             if not config:
                 data = {
-                    'message': f'The name {emailer_name} with key provided is not registered as an emailer. Plz visit your developers console to create one.',
+                    'message': f'The name {email_name} with key provided is not registered as an emailer. Plz visit your developers console to create one.',
                     'status': status.HTTP_404_NOT_FOUND,
                     }
                 return Response(data, status=data['status'])
 
         to = validated_data.get('recipient_list')
-        template_type = validated_data.get('template_type')
+        template_type = validated_data.get('template_type', "follow_up")
         email_body = validated_data.get('body')
         
         EMAIL_TEMPLATE_TYPES = {
             "follow_up": "email/custom_templates/follow_up_email_template.html"
         }
-        
-        EMAIL_BODY_SYNTAX = {
-                    "p>":["<p>","**","</p>"],
-                    "a>":["<a href='","****","'>","**","</a>"],
-                    "b>":["<a href='","****","'><button style='padding:10px;border-radius:10px;cursor:pointer;background:#0061f2;color:#ffffff;'>","**","</button></a>"],
-                    "span>":["<span>","**","</span>"],
-                }
-                
-                
-        new  = []
-        for i in email_body:
-            
-            ii = i
-            k =i
-            for key in EMAIL_BODY_SYNTAX.keys():
-                
-                all_tags = [f"<{m}" for m in EMAIL_BODY_SYNTAX.keys() ]
-                
-                if len(i.strip().split(key)) > 1:
-                                        
-                    # check for duplicates
-                    if i.strip().split(key)[0] in all_tags:
-                        print(i.strip().split(key)[0])
-                        
-                    else:
-                        tt = i.strip().split(key)[1]
-                        print(" was here", EMAIL_BODY_SYNTAX[key])
-                        ind = EMAIL_BODY_SYNTAX[key].index("**")
-                        print(ind)
-                        kk = [ v for v in EMAIL_BODY_SYNTAX[key]]
-                        kk[ind] = tt
-                        ii = "".join(kk) 
-                        
-                        if f"<{key}" in ["<a>","<b>"]:
-                            if len(k.split("href>")) > 1:
-                                _tt = k.split("href>")[1].strip()
-                                print(tt, _tt)
-                                kk[ind] = tt.split(f"href> {_tt}")[0]
-                                ii = "".join(kk) 
-                                href_pos = ii.split("****")
-                                href_pos.insert(1,_tt)
-                                ii = "".join(href_pos) 
-                            
-                            
-                        
-                elif len(i.split(key)) == 1:
-                    if i.split("<p>")[0] == " " and i.split(key)[0] not in all_tags:
-                        ii = "".join(["<p>",f"{i}","</p>"])
-            k = None
-            new.append(ii)
-                    
-        email_body = "\n".join(new)
 
     
         if len(to) == 1 and EMAIL_TEMPLATE_TYPES[template_type]:
             
-            email = EmailMessage(
-                subject = validated_data.get('subject'),
-                body = loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"name":f"{to[0]}", "email_name":f"{emailer_name}", "body":email_body }),
-                to = to,
-                from_email=config.from_email,
-                email_name=emailer_name
-            )
+            email = {
+                "subject" : validated_data.get('subject'),
+                "body" : loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"from":f"{to[0]}", "email_name":f"{config.from_email}", "body":email_body }),
+                "to": to,
+                "from_email":config.from_email,
+                "email_name":email_name
+            }
             
             # example
         """
             {
             "subject":"Testing",
-            "body": [
-            "p> Hello",
-            "p> You are receing this email as a test. Using a simple syntax, links and buttons cab be encorporated in emails via the janjas api.",
-            "b> This is a link button to janjas.tk href> https://janjas.tk",
-            "p> Below is a link",
-            "a> This is a link to janjas.tk href> https://janjas.tk"
-            ],
+            "body":"Continuing with some tests. Keep calm",
             "recipient_list":["jackkweyunga@gmail.com"],
             "emailer_name":"admin",
             "template_type":"follow_up",
-            "api_key":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM4ODY0ODkzLCJleHAiOjE2NDE0OTI4OTMsImp0aSI6IjVlMzFjODlkLTQxMTYtNDRmYy05MjQwLWMwMDczNzI3MjZlOCIsInVzZXJfaWQiOjEsIm9yaWdfaWF0IjoxNjM4ODY0ODkzfQ.olJW2Obr6dtNNHyI703P7_0l0hAyWAcE2hRjz_ROL4AmEUmcgljZ0WQOH_dx4uBGslfEkiHuAkvsddGWTljzECe0ZPKvas8PFJKR18ebjYuKnPo_vi0Nc0DcSdLw88uPu85P7NeXz_l3KM4pwmu1TTiq6dHfjmuwIQaao6zvqS4LbNfxl17006TrpDpR9gBP1NZe_XSmUfmw1BwkDAV0V8CywTZTQPWYofPysBN9ISCnyO4C0DZj_hieS3nyRnL-jVmgnIF4OdawDSeXF8wJZzG7Di3SowVQvXmyYXOt1f_SZtt6J_ltGGfTK_A7lki4A6ESNnr8k1dglYCF6lJrsA"
+            "email_key":"IB1C32Hek8Cd"
             }
         """
-
-        email.content_subtype = 'html'
-        
-        try:
-            email.send()  
-        except Exception as e:
-            
-            data = {
-                    'message': f'something is wrong. Did you provide correct recepient emails',
-                    'status': status.HTTP_404_NOT_FOUND,
-                    }
-            
-            return Response(data, status=data['status'])
-            
+        debug_task.delay()
+        send_email.delay(email=email, email_name=email_name, from_email=config.from_email, to=to)
 
         data = {
-        'message': 'Email sent!',
+        'message': 'Email sending in progress!',
         'status': status.HTTP_200_OK,
         }
 

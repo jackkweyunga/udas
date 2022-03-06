@@ -3,10 +3,11 @@ from typing import Tuple
 from django.db import transaction
 from django.core.management.utils import get_random_secret_key
 from django.contrib.auth.hashers import check_password
+from django.forms import ValidationError
 
 from utils.helpers import get_now
 
-from users.models import Service, ServiceUser, User
+from users.models import Service, ServiceUser, SystemLogs, User
 
 
 def user_create(email, password=None, **extra_fields) -> User:
@@ -17,20 +18,26 @@ def user_create(email, password=None, **extra_fields) -> User:
         **extra_fields
     }
 
-    user = User(email=email, **extra_fields)
+    try:
+        user = User(email=email, **extra_fields)
 
-    if password:
-        user.set_password(password)
+        if password:
+            user.set_password(password)
 
-        # verify user email or phone number.
+            # verify user email or phone number.
 
-    else:
-        user.set_unusable_password()
+        else:
+            user.set_unusable_password()
 
-    user.full_clean()
-    user.save()
-
-    return user
+        user.full_clean()
+        
+        user.save()
+        return user, None
+    
+    except ValidationError as e:
+        return None, e
+    
+    
 
 def user_create_superuser(email, password=None, **extra_fields) -> User:
     extra_fields = {
@@ -70,6 +77,7 @@ def user_get_or_create(*, email: str, **extra_data) -> Tuple[User, bool]:
 
     return user_create(email=email, **extra_data), True
 
+
 @transaction.atomic
 def user_before_create(*, email: str, **extra_data) -> Tuple[User, bool]:
 
@@ -94,6 +102,7 @@ def deactivate_user(username):
         user.save()
         return True
     return False
+
 
 @transaction.atomic
 def user_get_full(username):
@@ -121,6 +130,16 @@ def user_get_by_email(email):
         return user
     except:
         return None
+    
+@transaction.atomic
+def remove_user_by_email(email: str):
+    try:
+        user = User.objects.filter(email=email).first()
+        user.delete()
+        return True
+    except:
+        return False
+
 
 # for users using google.
 @transaction.atomic
@@ -158,3 +177,13 @@ def remove_service_user(user: User, service_id):
         else:
             return "user not in service"
     return False
+
+
+@transaction.atomic
+def log(msg, model="", isModel=False):
+    log = SystemLogs(
+            log_content=f"{msg}",
+            isModelLog=isModel,
+            model_logged = f"{model}",
+        )
+    log.save()

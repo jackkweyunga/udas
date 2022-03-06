@@ -30,7 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=1, cast=bool)
+# DEBUG = config("DEBUG", default=1, cast=bool)
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -48,13 +49,14 @@ INSTALLED_APPS = [
 
     # custom
     'api',
-    'users',
+    'users.apps.UsersConfig',
 
     # rest
     'rest_framework_jwt',
     'rest_framework_jwt.blacklist',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_celery_results',
 
     # extra
     'corsheaders',
@@ -63,7 +65,9 @@ INSTALLED_APPS = [
 
 ]
 
-APPEND_SLASH=False
+APPEND_SLASH=True
+
+X_FRAME_OPTIONS='SAMEORIGIN' # only if django version >= 3.0
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -99,7 +103,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'auth.wsgi.application'
+
+# WSGI_APPLICATION = 'auth.wsgi.application'
+
+
+ASGI_APPLICATION = 'auth.asgi.application'
 
 
 AUTH_USER_MODEL = 'users.User'
@@ -135,7 +143,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -207,6 +214,17 @@ JWT_AUTH = {
 
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
+
+
+# CELERY
+# Celery Configuration Options
+CELERY_BROKER_URL = "redis://localhost:6379//"
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Africa/Dar_es_Salaam'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_ACCEPT_CONTENT=["json"]
+CELERY_TASK_SERIALIZER='json'
 
 
 # TWILIO settings

@@ -1,4 +1,6 @@
 
+from email.policy import default
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.management.utils import get_random_secret_key
@@ -7,6 +9,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 from django.core.management.utils import get_random_secret_key
+from cryptography.fernet import Fernet
 
 """
 User
@@ -19,6 +22,21 @@ ServiceUser
 ServiceUserSubscription
 
 """
+
+
+class SystemLogs(models.Model):
+    
+    """System Logs"""
+    
+    log_content = models.TextField(default="")
+    isModelLog = models.BooleanField(default=True)
+    model_logged = models.CharField(max_length=1024, default="")
+    date_logged = models.DateTimeField(auto_now_add=True)
+    
+    
+    def __str__(self) -> str:
+        return f"DATETIME: {self.date_logged}   ISMODELLOG:{self.isModelLog}   MODEL: {self.model_logged}   MESSAGE: {self.log_content}"
+
 
 class User(AbstractUser):
 
@@ -50,6 +68,9 @@ class User(AbstractUser):
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
 
 
+    def __repr__(self) -> str:
+        return f"{self.email}"
+
 class DynamicEmailConfiguration(models.Model):
     """
         Dynamic email configuration model
@@ -60,7 +81,7 @@ class DynamicEmailConfiguration(models.Model):
     
     created_by = models.ForeignKey(User, related_name="emails", verbose_name="creator", on_delete=models.CASCADE, default=1)
     
-    api_key = models.CharField(max_length=1024, default='')
+    email_key = models.CharField(max_length=1024, default='')
     
     host = models.CharField(
         blank = True, null = True,
@@ -179,6 +200,7 @@ class RSAPair(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     private_key = models.TextField(null=True, blank=True)
     public_key = models.TextField(null=True, blank=True)
+    password = models.CharField(max_length=1024, default="")
     
         
     def __str__(self) -> str:
@@ -188,6 +210,9 @@ class RSAPair(models.Model):
         
         keys = RSAKeys()
         
+        from rest_framework_jwt.utils import uuid
+        
+        self.password = uuid.uuid1() 
         self.private_key = keys.private
         self.public_key = keys.public
         

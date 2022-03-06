@@ -18,7 +18,7 @@ from django.urls import path, include
 from dashboard.views import login_view, logout_view
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('', include('dashboard.urls')),
     path('dashboard/', include('dashboard.urls')),

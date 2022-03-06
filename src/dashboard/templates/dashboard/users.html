@@ -1,90 +1,124 @@
-{% extends 'dashboard/dashboard_base.html' %}
+{% extends 'dashboard/dashboard_base.html' %} {% block main %}
 
+<div class="container bg-light ">
+  <nav class="nav nav-list mb-2">
+    <div class="container p-0 d-flex">
+      <a
+        href="#!"
+        class="text-dark m-0 d-flex w-25 shadow-sm btn btn-sm p-2"
+        data-bs-toggle="modal"
+        data-bs-target="#addUserModal"
+      >
+        <i class="bi bi-plus"></i>
+        Add User
+      </a>
+      <span class="d-flex w-75 flex-1"></span>
+      <span class="d-flex w-25 align-items-center justify-content-center"> {{count}} - user(s) </span>
+    </div>
+  </nav>
 
+  <table
+    id="users-list"
+    class="table bg-white"
+    style="width: 100%"
+  >
+    <thead>
+      <tr>
+        <th>email</th>
+        <th>fistmane</th>
+        <th>lastname</th>
+        <th>IsAdmin</th>
+        <th>Active</th>
+        <th>Last Login</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td><a href="{% url 'user' user.id %}">{{user.email}}</a></td>
+        <td>{{user.first_name}}</td>
+        <td>{{user.last_name}}</td>
+        <td>{{user.is_superuser}}</td>
+        <td>{{user.is_active}}</td>
+        <td>{{user.last_login}}</td>
 
+        <td>
+          <a href="{% url 'user-delete' user.id %}" class="btn">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>email</th>
+        <th>firstname</th>
+        <th>lastname</th>
+        <th>IsAdmin</th>
+        <th>Active</th>
+        <th>Last Login</th>
+        <th>Actions</th>
+      </tr>
+    </tfoot>
+  </table>
 
-{% block main %}
-
-<div class="container bg-light card">
-
-
-    <nav class="nav nav-list mb-2">
-        <div class="container p-0 shadow-sm">
-            <a href="#!" class="text-dark m-0 shadow-sm btn btn-sm p-2">
-                <i class="bi bi-plus"></i>
-                Add User
-            </a>
-            
-            <span class="">
-                    {{count}} - user(s)
-            </span>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="addUserModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="addUserModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <small class="modal-title">New user</small>
+          <a
+            type="button"
+            class="btn-close text-danger"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            <small>close</small>
+          </a>
         </div>
-    </nav>
 
-    <table id="users-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
-        <thead>
-            <tr>
-                <th>email</th>
-                <th>username</th>
-                <th>fistmane</th>
-                <th>lastname</th>
-                <th>IsAdmin</th>
-                <th>Active</th>
-                <th>Last Login</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{user.email}}</td>
-                <td>{{user.username}}</td>
-                <td>{{user.first_name}}</td>
-                <td>{{user.last_name}}</td>
-                <td>{{user.is_superuser}}</td>
-                <td>{{user.is_active}}</td>
-                <td>{{user.last_login}}</td>
-                
-                <td>
-                    <button class="btn">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    <button class="btn">
-                        <i class="bi bi-pen"></i>
-                    </button>
-                    <a href="{% url 'user' user.id %}" class="btn">
-                        <i data-feather="corner-up-right"></i>
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>email</th>
-                <th>username</th>
-                <th>fistmane</th>
-                <th>lastname</th>
-                <th>IsAdmin</th>
-                <th>Active</th>
-                <th>Last Login</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
-    </table>
-
-
+        <form action="{% url 'users-dashboard' %}" method="post">
+          {% csrf_token %}
+          <div class="modal-body">
+              <div class="mb-3">
+                <input type="text" required class="form-control mb-3" name="firstname" id="" aria-describedby="firstname" placeholder="First Name">
+                <input type="text" required class="form-control mb-3" name="lastname" id="" aria-describedby="lastname" placeholder="Last Name">
+                <input type="email" required class="form-control mb-3" name="email" id="" aria-describedby="email" placeholder="Email">
+                <input type="phone" required class="form-control mb-3" name="phone" id="" aria-describedby="phone" placeholder="Phone">
+                <input type="password" required class="form-control" name="password" id="" aria-describedby="helpId" placeholder="Password">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              <small>close</small>
+            </button>
+            <button type="submit" class="btn btn-primary"><small>save</small></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-
-{% endblock %}
-
-{% block extrascripts %}
+{% endblock %} {% block extrascripts %}
 <script>
-    $(document).ready(function() {
-    $('#users-list').DataTable();
-} );
+  $(document).ready(function () {
+    $("#users-list").DataTable();
+  });
 </script>
 
 {% endblock %}

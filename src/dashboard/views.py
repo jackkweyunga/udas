@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View 
-from django.views.generic import ListView
-from users.models import User, DynamicEmailConfiguration, Service, ServicePackage, ServiceUser, ServiceUserSubscription
+from users.models import SystemLogs, User, DynamicEmailConfiguration, Service, ServicePackage, ServiceUser, ServiceUserSubscription
+from utils.atomic_services import user_create
 from utils.mixins import LoginRequired
-from utils.services import create_email_auth_token
-
+from django.views.generic.edit import DeleteView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -22,23 +21,24 @@ class IndexView(LoginRequired, View):
             "user":request.user,
             "n_users":User.objects.all().count(),
             "n_emails":DynamicEmailConfiguration.objects.all().count(),
-            "n_services": Service.objects.all().count()
+            "n_services": Service.objects.all().count(),
+            "sys_logs": SystemLogs.objects.all(),
         }
         return render(request, "dashboard/index.html", context=context)
-
 
 class EmailsView(LoginRequired, View):
     
     def get(self, request):
+        
         all = DynamicEmailConfiguration.objects.all()
+        
         context = {
-            
             "emails":all,
             "count":all.count()
-            
         }
         
         return render(request, 'dashboard/emails.html', context)
+    
     
     def post(self, request):
         
@@ -58,16 +58,19 @@ class EmailsView(LoginRequired, View):
         
         return redirect('emails')
     
+    
 class email_view(LoginRequired, View):
     
     def get(self, request, id):
         email = DynamicEmailConfiguration.objects.filter(id=id).first()
         
-        if email.api_key == '':
-            user = email.created_by
-            token = create_email_auth_token(user)
+        if email.email_key == '':
+            from rest_framework_jwt.utils import uuid
+            from django.utils.crypto import get_random_string
             
-            email.api_key = token
+            key = uuid.uuid1(node=int(id), clock_seq=1)
+            key = get_random_string(12,"abcdefghijklmnopq123456789ABCDEFGHI")
+            email.email_key = key
             email.save()
         
         context = {
@@ -75,7 +78,8 @@ class email_view(LoginRequired, View):
         }
         
         return render(request, 'dashboard/email_view.html', context=context)
-        
+    
+    
     def post(Self, request, id):
         data = request.POST.dict()
         print(data)
@@ -98,6 +102,7 @@ class email_view(LoginRequired, View):
         
         return redirect('email', id=email.id)
     
+    
 class UsersView(LoginRequired, View):
     
     def get(self, request):
@@ -111,6 +116,31 @@ class UsersView(LoginRequired, View):
         }
         
         return render(request, 'dashboard/users.html', context)
+    
+    def post(Self, request):
+        
+        first_name = request.POST["firstname"]
+        last_name = request.POST['lastname']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        password = request.POST['password']
+        
+        user, err = user_create(email, password, first_name=first_name, last_name=last_name, phone=phone)
+        
+        if user is not None:
+            messages.info(request, "User created successful")
+            return redirect("users-dashboard")
+        
+        messages.info(request, err)
+        return redirect("users-dashboard")
+
+
+class UserDeleteView(DeleteView):
+    model = User
+    success_url = "/dashboard/users/"
+
+        
+        
     
 @login_required
 def user_view(request, id):
@@ -213,6 +243,7 @@ def login_view(request):
 
     }
     return render(request, 'login_view.html', context)
+
 
 @login_required
 def logout_view(request):
