@@ -25,7 +25,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.templatetags.static import static
 from django.urls.base import reverse_lazy
-from api.tasks import send_email, add
+from api.tasks import send_email
 from auth.celery import debug_task
 
 # custom
@@ -345,7 +345,7 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
             "email_key":"IB1C32Hek8Cd"
             }
         """
-        debug_task.delay()
+        
         send_email.delay(email=email, email_name=email_name, from_email=config.from_email, to=to)
 
         data = {

@@ -1,5 +1,24 @@
 {% extends 'dashboard/dashboard_base.html' %}
 
+{% block scripts%}
+
+<script>
+var socket = new WebSocket('ws://'+window.location.host+'/ws/notify/');
+
+socket.onopen = function open () {
+    console.log("Web socket connection started");
+}
+
+if (socket.readyState == WebSocket.OPEN) {
+    socket.onopen();
+}
+</script>
+
+{% endblock %}
+
+
+
+
 {% block main %}
 
 <div class='container'>

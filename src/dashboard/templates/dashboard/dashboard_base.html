@@ -192,8 +192,11 @@
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
     {% block scripts%}{% endblock %}
-
+    
     <script>
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
 
         // Toast notification sound
         var myMusic = document.getElementById("music");

@@ -30,8 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = config("DEBUG", default=1, cast=bool)
-DEBUG = False
+DEBUG = config("DEBUG", default=1, cast=bool)
+# DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,6 +40,7 @@ SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +51,8 @@ INSTALLED_APPS = [
     # custom
     'api',
     'users.apps.UsersConfig',
+    'authnotifications',
+
 
     # rest
     'rest_framework_jwt',
@@ -117,12 +120,33 @@ AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': config(
-        'DATABASE_URL',
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        cast=db_url
-    )
+if os.environ.get("AUTH_DATABASE_URL"):
+    
+    import dj_database_url
+    DB_URL = os.environ.get("AUTH_DATABASE_URL")
+    
+    DATABASES = {}
+
+    DATABASES['default'] = dj_database_url.config(default=DB_URL, conn_max_age=600, ssl_require=False)
+    
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
+
+# channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get("REDIS_URL", default="redis://localhost:6379")],
+        },
+    }
 }
 
 
