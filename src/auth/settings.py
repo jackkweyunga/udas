@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # custom
     'api',
@@ -64,7 +65,6 @@ INSTALLED_APPS = [
     # extra
     'corsheaders',
     'django_extensions',
-    'django.contrib.sites',
 
 ]
 

@@ -59,12 +59,7 @@ CMD source ./env/bin/activate \
     && python manage.py makemigrations \
     && python manage.py migrate \
     && python csu.py \
-    && gunicorn auth.wsgi:application \
-        --workers 5 \
-        --timeout 3600000 \
-        --log-level=debug \
-        --bind 0.0.0.0
-        --port 8000 
+    && daphne -b 0.0.0.0 -p 8000 auth.asgi:application
 
 
 # jek
