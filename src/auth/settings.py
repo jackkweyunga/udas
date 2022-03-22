@@ -243,7 +243,7 @@ LOGOUT_URL = '/logout/'
 
 # CELERY
 # Celery Configuration Options
-CELERY_BROKER_URL = "redis://localhost:6379//"
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", default="redis://localhost:6379")
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = 'Africa/Dar_es_Salaam'
 CELERY_TASK_TRACK_STARTED = True
