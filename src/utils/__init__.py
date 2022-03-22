@@ -5,5 +5,5 @@ from django.db import OperationalError
 
 try:
     SITE = Site.objects.get_current()
-except OperationalError as e:
+except:
     SITE = ""
