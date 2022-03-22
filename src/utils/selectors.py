@@ -26,6 +26,10 @@ def user_get_me(*, user: User):
 def get_rsa_key(type: str):
     
     key = RSAPair.objects.first()
+
+    if key is None:
+        key = RSAPair()
+        key.save()
     
     if type == "public":
         return key.public_key
