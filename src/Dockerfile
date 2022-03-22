@@ -36,9 +36,9 @@ RUN apk update \
     && apk add postgresql-dev \
     && python -m venv env \
     && source ./env/bin/activate \
+    && pip install --upgrade pip  \
     && pip install psycopg2 \
     && apk add jpeg-dev zlib-dev libjpeg libffi-dev \
-    && pip install --upgrade pip  \
     && pip install -r requirements.txt \
     && apk del build-deps
 
@@ -63,6 +63,8 @@ CMD source ./env/bin/activate \
         --workers 5 \
         --timeout 3600000 \
         --log-level=debug \
-        --bind 0.0.0.0:8000 
+        --bind 0.0.0.0
+        --port 8000 
+
 
 # jek
