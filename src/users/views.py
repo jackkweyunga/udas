@@ -8,10 +8,9 @@ from django.template import loader
 from django.conf import settings
 # from django.core.mail import send_mail
 from utils.mail import send_mail
-from django.utils.translation import ugettext as _
 from users.models import DynamicEmailConfiguration
 
-subject = getattr(settings, 'DES_TEST_SUBJECT', _("Test Email"))
+subject = getattr(settings, 'DES_TEST_SUBJECT', "Test Email")
 text_template = getattr(settings, 'DES_TEST_TEXT_TEMPLATE', "des/test_email.txt")
 html_template = getattr(settings, 'DES_TEST_HTML_TEMPLATE', None)
 
@@ -42,17 +41,17 @@ def send_test_email(request, email_id):
                 email_name=email_name)
 
             messages.success(request,
-                    _("Test email sent. Please check \"{}\" for a "
+                    "Test email sent. Please check \"{}\" for a "
                     "message with the subject \"{}\"").format(
                     emails,
                     subject
                 )
-            )
+            
         except Exception as e:
             print(e)
-            messages.error(request, _("Could not send email. {}").format(e))
+            messages.error(request, "Could not send email. {}").format(e)
     else:
-        messages.error(request, _("You must provide an email address to test with."))
+        messages.error(request, "You must provide an email address to test with.")
 
     return redirect('email', id=email_id)
 

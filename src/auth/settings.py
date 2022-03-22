@@ -41,19 +41,18 @@ SITE_ID = 1
 
 INSTALLED_APPS = [
     'channels',
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
 
     # custom
     'api',
     'users.apps.UsersConfig',
     'authnotifications',
-
 
     # rest
     'rest_framework_jwt',
