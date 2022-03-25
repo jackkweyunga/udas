@@ -36,7 +36,7 @@ RUN apk update \
     && apk add postgresql-dev \
     && python -m venv env \
     && source ./env/bin/activate \
-    && pip install --upgrade pip  \
+    && pip install --upgrade pip \
     && pip install psycopg2 \
     && apk add jpeg-dev zlib-dev libjpeg libffi-dev \
     && pip install -r requirements.txt \

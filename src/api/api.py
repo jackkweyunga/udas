@@ -324,29 +324,30 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         }
 
     
-        if len(to) == 1 and EMAIL_TEMPLATE_TYPES[template_type]:
-            
-            email = {
-                "subject" : validated_data.get('subject'),
-                "body" : loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"from":f"{to[0]}", "email_name":f"{config.from_email}", "body":email_body }),
-                "to": to,
-                "from_email":config.from_email,
-                "email_name":email_name
-            }
-            
-            # example
-        """
-            {
-            "subject":"Testing",
-            "body":"Continuing with some tests. Keep calm",
-            "recipient_list":["jackkweyunga@gmail.com"],
-            "emailer_name":"admin",
-            "template_type":"follow_up",
-            "email_key":"IB1C32Hek8Cd"
-            }
-        """
+        email = {
+            "subject" : validated_data.get('subject'),
+            "body" : loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"from":f"{to[0]}", "email_name":f"{config.from_email}", "body":email_body }),
+            "to": to,
+            "from_email":config.from_email,
+            "email_name":email_name
+        }
         
         send_email.delay(email=email, email_name=email_name, from_email=config.from_email, to=to)
+    
+        
+
+            # example
+        """
+                {
+                "subject":"Testing",
+                "body":"Continuing with some tests. Keep calm",
+                "recipient_list":["jackkweyunga@gmail.com"],
+                "emailer_name":"admin",
+                "template_type":"follow_up",
+                "email_key":"kuhiu"
+                }
+        """
+        
 
         data = {
         'message': 'Email sending in progress!',
