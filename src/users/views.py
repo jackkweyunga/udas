@@ -40,16 +40,11 @@ def send_test_email(request, email_id):
                 html_message = message_html,
                 email_name=email_name)
 
-            messages.success(request,
-                    "Test email sent. Please check \"{}\" for a "
-                    "message with the subject \"{}\"").format(
-                    emails,
-                    subject
-                )
+            messages.success(request, f"Test email sent. Please check \"{emails}\" for a message with the subject \"{subject}\"")
             
         except Exception as e:
             print(e)
-            messages.error(request, "Could not send email. {}").format(e)
+            messages.error(request, f"Could not send email. {e}")
     else:
         messages.error(request, "You must provide an email address to test with.")
 

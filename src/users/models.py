@@ -36,6 +36,8 @@ class SystemLogs(models.Model):
     def __str__(self) -> str:
         return f"DATETIME: {self.date_logged}   ISMODELLOG:{self.isModelLog}   MODEL: {self.model_logged}   MESSAGE: {self.log_content}"
 
+    def log_level(self):
+        return 1 if str(self.log_content).lower().count("failed") > 0 else 0
 
 class User(AbstractUser):
 
