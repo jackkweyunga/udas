@@ -9,6 +9,7 @@ from services.models import Service, ServicePackage, ServiceUser, ServiceUserSub
 
 
 from utils.atomic_services import user_create
+from utils.email_templates import FollowUpEmailTemplate
 from utils.mixins import LoginRequired
 from django.views.generic.edit import DeleteView
 from django.contrib import messages
@@ -29,7 +30,7 @@ class IndexView(LoginRequired, View):
             "n_users":User.objects.all().count(),
             "n_emails":DynamicEmailConfiguration.objects.all().count(),
             "n_services": Service.objects.all().count(),
-            "sys_logs": SystemLogs.objects.all(),
+            "sys_logs": SystemLogs.objects.all().order_by('-id'),
         }
         return render(request, "dashboard/index.html", context=context)
 
@@ -41,7 +42,14 @@ class EmailsView(LoginRequired, View):
         
         context = {
             "emails":all,
-            "count":all.count()
+            "count":all.count(),
+            "email_templates": [
+                FollowUpEmailTemplate(
+                    email_content="Sample Content",
+                    email_configuration_name="Email Configrationn Name",
+                    email_configuration_email_name="Email Configuration Email Name"
+                    )
+                ]
         }
         
         return render(request, 'emails/emails.html', context)

@@ -23,48 +23,65 @@
         </div>
     </nav>
 
-    <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Host</th>
-                <th>From_email</th>
-                <th>Username</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for email in emails %}
-            <tr>
-                <td>{{ email.name}}</td>
-                <td>{{ email.slug}}</td>
-                <td>{{ email.host}}</td>
-                <td>{{ email.email_name}}</td>
-                <td>{{ email.username}}</td>
-                <td>
-                    <a href="{% url 'email-delete' email.id %}" class="btn">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                    <a href="{% url 'email' email.id %}" class="btn">
-                        <i data-feather="corner-up-right"></i>
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Host</th>
-                <th>email name</th>
-                <th>Username</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="row">
+        <div class="col-md-4">
+            <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>
+                            <small>Email Confs</small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for email in emails %}
+                    <tr class="d-flex">
+                        <td class="d-flex w-100 m-0 p-0">
+                            <a href="{% url 'email' email.id %}" style="text-decoration:none;"
+                                class="d-flex w-75 justify-content-left px-2 align-items-center text-left">
+                                {{ email.name}}
+                            </a>
 
+                            <a href="{% url 'email-delete' email.id %}" class="btn shadow d-flex w-25">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-8">
+            <table id="emails-templates-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>
+                            <small>Email Templates</small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for template in email_templates %}
+                        <tr class="p-2">
+                            <td>
+                                <div class="row bg-white">
+                                    <div class="col py-3">
+                                        <h3 class="text-center">{{ template.name }} Template</h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col bg-white mb-3">
+                                        {{ template.load_template }}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                            
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </div>
 
@@ -83,9 +100,12 @@
             <form action="{% url 'emails' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-body">
-                    <input type="text" required placeholder="name or id | unique" class="form-control mb-3" name="name" id="">
-                    <input type="email" required placeholder="your email" class="form-control mb-3" name="username" id="">
-                    <input type="text" required placeholder="from name" class="form-control mb-3" name="email_name" id="">
+                    <input type="text" required placeholder="name or id | unique" class="form-control mb-3" name="name"
+                        id="">
+                    <input type="email" required placeholder="your email" class="form-control mb-3" name="username"
+                        id="">
+                    <input type="text" required placeholder="from name" class="form-control mb-3" name="email_name"
+                        id="">
                     <input type="password" required class="form-control mb-3" name="password" id="">
                     <input type="text" required class="form-control mb-3" name="host" value="smtp.gmail.com" id="">
                     <input type="number" required class="form-control mb-3" name="port" value="587" id="">

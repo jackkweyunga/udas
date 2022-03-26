@@ -8,15 +8,9 @@ from django.template import loader
 from django.conf import settings
 
 # from django.core.mail import send_mail
-from utils.mail import send_mail
+from emails.tasks import async_send_email
 from emails.models import DynamicEmailConfiguration
-
-subject = getattr(settings, 'DES_TEST_SUBJECT', "Test Email")
-text_template = getattr(settings, 'DES_TEST_TEXT_TEMPLATE', "des/test_email.txt")
-html_template = getattr(settings, 'DES_TEST_HTML_TEMPLATE', None)
-
-message_text = loader.render_to_string(text_template)
-message_html = loader.render_to_string(html_template) if html_template else None
+from utils.email_templates import FollowUpEmailTemplate
 
 
 @require_http_methods(["POST"])
@@ -33,13 +27,21 @@ def send_test_email(request, email_id):
 
     if emails:
         try:
-            send_mail(
-                subject,
+            subject = "Test Email"
+            message_text = "This is a test email. Seems every thing is working fine."
+            body = FollowUpEmailTemplate(
                 message_text,
-                config.email_name or None,
-                emails,
-                html_message = message_html,
-                email_configuration_name=config.name)
+                config.name,
+                config.email_name,
+            ).load_template()
+
+            async_send_email(
+                subject=subject,
+                body=body,
+                to=emails,
+                email_configuration_name=config.name,
+                email_configuration_email_name=config.email_name
+            )
 
             messages.success(request, f"Test email sent. Please check \"{emails}\" for a message with the subject \"{subject}\"")
             

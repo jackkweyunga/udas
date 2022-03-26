@@ -19,7 +19,7 @@ from rest_framework_jwt.views import ObtainJSONWebTokenView
 from django.urls import reverse
 from django.conf import settings
 from django.templatetags.static import static
-from api.tasks import async_send_email
+from emails.tasks import async_send_email
 from utils.email_templates import FollowUpEmailTemplate
 
 # custom

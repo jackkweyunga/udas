@@ -54,7 +54,7 @@
                     <div class="d-flex flex-column">
                         {% for log in sys_logs%}
                         {% if log.log_level == 1%}
-                        <span class="bg-danger shadow px-2 py-3">{{log}}</span>
+                        <span class="bg-danger text-white shadow px-2 py-3">{{log}}</span>
                         {% else %}
                         <span class="bg-info shadow px-2 py-3">{{log}}</span>
                         {% endif %}
