@@ -41,8 +41,8 @@ jobs:
       with:
         context: ./src/
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/auth:latest
-        cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/auth:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/test-auth:latest
+        cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/test-auth:latest
         cache-to: type=inline
 
     # - name: Build
