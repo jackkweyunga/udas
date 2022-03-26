@@ -16,6 +16,7 @@ urlpatterns = [
     # email view
     path('emails/', views.EmailsView.as_view(), name="emails-dashboard"),
     path('emails/', views.EmailsView.as_view(), name="emails"),
+    path('emails/<pk>/delete', views.EmailConfigurationDeleteView.as_view(), name="email-delete"),
     path("email/<int:id>/", views.email_view.as_view(), name="email"),
     path("send_test_email/<int:email_id>/", user_views.send_test_email , name="send_test_email"),
     

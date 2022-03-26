@@ -2,10 +2,6 @@
 ## imports
 
 # builtin
-import os
-from pyexpat import model
-from urllib.parse import urlencode
-from requests.api import post
 import random
 
 # rest
@@ -20,13 +16,11 @@ from rest_framework.reverse import reverse
 from rest_framework_jwt.views import ObtainJSONWebTokenView
 
 # django
-from django.template import loader
 from django.urls import reverse
 from django.conf import settings
 from django.templatetags.static import static
-from django.urls.base import reverse_lazy
-from api.tasks import send_email
-from auth.celery import debug_task
+from api.tasks import async_send_email
+from utils.email_templates import FollowUpEmailTemplate
 
 # custom
 from utils.mixins import PublicApiMixin, ApiAuthMixin, ApiErrorsMixin
@@ -34,9 +28,14 @@ from utils.atomic_services import log, user_before_create, user_change_secret_ke
 from utils.services import jwt_login, user_record_login, SITE
 from utils.helpers import generateOTP
 from utils.selectors import user_get_me
-from users.models import RSAPair, SystemLogs
-from users.models import User, DynamicEmailConfiguration
 from utils.mail import EmailMessage
+
+
+# models
+from users.models import RSAPair, User
+from systemlogging.models import SystemLogs
+from emails.models import DynamicEmailConfiguration
+
 
 # twilio
 from twilio.rest import Client
@@ -302,38 +301,37 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
 
         validated_data = serializer.validated_data
 
-        email_name = validated_data.get('email_name') or None
+        email_configuration_name = validated_data.get('email_name') or None
         key = validated_data.get('email_key') or None
-        config = DynamicEmailConfiguration.objects.filter(email_name="admin").first()
         
-        if email_name != None:
-            config = DynamicEmailConfiguration.objects.filter(email_name=f"{email_name}", email_key=key).first()
+        if email_configuration_name != None:
+            config = DynamicEmailConfiguration.objects.filter(email_name=f"{email_configuration_name}", email_key=key).first()
             if not config:
                 data = {
-                    'message': f'The name {email_name} with key provided is not registered as an emailer. Plz visit your developers console to create one.',
+                    'message': f'The name {email_configuration_name} with key provided is not registered as an emailer. Plz visit your developers console to create one.',
                     'status': status.HTTP_404_NOT_FOUND,
                     }
                 return Response(data, status=data['status'])
 
         to = validated_data.get('recipient_list')
-        template_type = validated_data.get('template_type', "follow_up")
         email_body = validated_data.get('body')
         
-        EMAIL_TEMPLATE_TYPES = {
-            "follow_up": "email/custom_templates/follow_up_email_template.html"
-        }
+        if validated_data.get('template_type', "follow_up") == "follow_up":
+            body = FollowUpEmailTemplate(
+                email_content=email_body,
+                email_configuration_name= email_configuration_name,
+                email_configuration_email_name=config.email_name,
+            )
 
-    
         email = {
             "subject" : validated_data.get('subject'),
-            "body" : loader.render_to_string(EMAIL_TEMPLATE_TYPES[template_type] , {"from":f"{to[0]}", "email_name":f"{config.from_email}", "body":email_body }),
+            "body" : body.load_template(),
             "to": to,
-            "from_email":config.from_email,
-            "email_name":email_name
+            "email_configration_email_name":config.from_email,
+            "email_configuration_name":email_configuration_name
         }
         
-        send_email.delay(email=email, email_name=email_name, from_email=config.from_email, to=to)
-    
+        async_send_email(**email)
         
 
             # example

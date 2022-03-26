@@ -3,7 +3,7 @@ from datetime import datetime
 from django.utils import timezone
 import math, random
 
-from users.models import DynamicEmailConfiguration
+from emails.models import DynamicEmailConfiguration
 from django.urls import reverse
 
 

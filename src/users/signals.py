@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import User, ServicePackage, ServiceUser, DynamicEmailConfiguration, SystemLogs
-
+from .models import User
+from systemlogging.models import SystemLogs
 
 @receiver(post_save, sender=User)
 def log_user_creation(sender, instance, created, **kwargs):

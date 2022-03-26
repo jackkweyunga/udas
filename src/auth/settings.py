@@ -51,9 +51,12 @@ INSTALLED_APPS = [
 
 
     # custom
-    'api',
+    'api.apps.ApiConfig',
+    'emails.apps.EmailsConfig',
+    'services.apps.ServicesConfig',
     'users.apps.UsersConfig',
-    'authnotifications',
+    'authnotifications.apps.AuthnotificationsConfig',
+    'systemlogging.apps.SystemloggingConfig',
 
     # rest
     'rest_framework_jwt',
@@ -68,6 +71,13 @@ INSTALLED_APPS = [
 
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 60 * 60 * 60
+SESSION_COOKIE_NAME = "janjas-auth-cookie"
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN = None
 
 APPEND_SLASH=True
 
@@ -267,6 +277,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # dynamic emailing
 EMAIL_BACKEND = 'utils.email_backend.ConfiguredEmailBackend'
+
+EMAIL_TEMPLATES_TYPES = {
+    "follow_up":"email/custom_templates/follow_up_email_template.html"
+}
 
 # verification email
 EMAIL_TOKEN_LIFE = 60 * 60

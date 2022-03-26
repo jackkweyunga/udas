@@ -6,9 +6,10 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.template import loader
 from django.conf import settings
+
 # from django.core.mail import send_mail
 from utils.mail import send_mail
-from users.models import DynamicEmailConfiguration
+from emails.models import DynamicEmailConfiguration
 
 subject = getattr(settings, 'DES_TEST_SUBJECT', "Test Email")
 text_template = getattr(settings, 'DES_TEST_TEXT_TEMPLATE', "des/test_email.txt")

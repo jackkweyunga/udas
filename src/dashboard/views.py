@@ -1,6 +1,13 @@
 from django.shortcuts import render, redirect
-from django.views import View 
-from users.models import SystemLogs, User, DynamicEmailConfiguration, Service, ServicePackage, ServiceUser, ServiceUserSubscription
+from django.views import View, generic
+
+# models
+from users.models import User
+from systemlogging.models import SystemLogs
+from emails.models import DynamicEmailConfiguration
+from services.models import Service, ServicePackage, ServiceUser, ServiceUserSubscription
+
+
 from utils.atomic_services import user_create
 from utils.mixins import LoginRequired
 from django.views.generic.edit import DeleteView
@@ -8,7 +15,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, EmailConfigCreateForm
-# Create your views here.
+
 
 class IndexView(LoginRequired, View):
     
@@ -37,7 +44,7 @@ class EmailsView(LoginRequired, View):
             "count":all.count()
         }
         
-        return render(request, 'dashboard/emails.html', context)
+        return render(request, 'emails/emails.html', context)
     
     
     def post(self, request):
@@ -47,14 +54,19 @@ class EmailsView(LoginRequired, View):
         if form.is_valid():
             try:
                 form.save()
-                email = DynamicEmailConfiguration.objects.filter(**form.cleaned_data).first()
-                email.created_by = request.user()
-                messages.success(request, 'email settings added')
-            except:
-                messages.success(request, form.errors.as_text())
+            except Exception as e:
+                messages.error(request, f"Error: {e}")
+            
+            email = DynamicEmailConfiguration.objects.filter(**form.cleaned_data).first()
+            email.created_by = request.user
+
+            messages.success(request, 'email settings added')
                 
         else:
-            messages.error(request, 'failed to create email settings')
+            form_errors = form.errors.as_text()
+            print(str(form_errors))
+            messages.error(request, "Failed to save email settings")
+
         
         return redirect('emails')
     
@@ -65,10 +77,8 @@ class email_view(LoginRequired, View):
         email = DynamicEmailConfiguration.objects.filter(id=id).first()
         
         if email.email_key == '':
-            from rest_framework_jwt.utils import uuid
             from django.utils.crypto import get_random_string
             
-            key = uuid.uuid1(node=int(id), clock_seq=1)
             key = get_random_string(12,"abcdefghijklmnopq123456789ABCDEFGHI")
             email.email_key = key
             email.save()
@@ -77,7 +87,7 @@ class email_view(LoginRequired, View):
             "email": email,
         }
         
-        return render(request, 'dashboard/email_view.html', context=context)
+        return render(request, 'emails/email_view.html', context=context)
     
     
     def post(Self, request, id):
@@ -89,10 +99,10 @@ class email_view(LoginRequired, View):
         
         if email:
             # edit settings
-            email.email_name = data.get('email_name')
+            email.name = data.get('name')
             email.host = data.get('host')
             email.port = data.get('port')
-            email.from_email = data.get('from_email')
+            email.email_name = data.get('email_name')
             email.username = data.get('username')
             email.password = data.get('password')
             email.save()
@@ -101,6 +111,12 @@ class email_view(LoginRequired, View):
             messages.error(request, 'failed to edit email settings')
         
         return redirect('email', id=email.id)
+
+
+class EmailConfigurationDeleteView(generic.DeleteView):
+
+    model = DynamicEmailConfiguration
+    success_url = "/dashboard/emails/"
     
     
 class UsersView(LoginRequired, View):
@@ -115,7 +131,7 @@ class UsersView(LoginRequired, View):
             
         }
         
-        return render(request, 'dashboard/users.html', context)
+        return render(request, 'users/users.html', context)
     
     def post(Self, request):
         
@@ -149,7 +165,7 @@ def user_view(request, id):
         "selected_user":User.objects.filter(id=id).first()
     }
     
-    return render(request, 'dashboard/user_view.html', context)
+    return render(request, 'users/user_view.html', context)
 
     
 class ServicesView(LoginRequired, View):
@@ -161,7 +177,7 @@ class ServicesView(LoginRequired, View):
             "count": all.count()
         }
         
-        return render(request, 'dashboard/services.html', context)
+        return render(request, 'dashboard/services/services.html', context)
 
 
 class add_service(LoginRequired, View):

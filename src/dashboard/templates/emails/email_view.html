@@ -23,7 +23,7 @@
                     <div class=" mt-3">
                         <h5>send a test email </h5>
                         <form action="{% url 'send_test_email' email.id%}" method="post"> {% csrf_token %}
-                            <input type="text" name="email_name" hidden value="{{ email.email_name}}">
+                            <input type="text" name="name" hidden value="{{ email.name}}">
                             <div class="form-group">
                                 <label for="to">To</label> <br>
                                 <input type="text" name="emails" class="form-control">
@@ -53,7 +53,7 @@
                 {% csrf_token %}
                 <div class="input-group mb-3">
                     <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">name</label>
-                    <input type="text" name="email_name" value="{{ email.email_name }}" class="form-control" required>
+                    <input type="text" name="name" value="{{ email.name }}" class="form-control" required>
                 </div>
                 <div class="input-group">
                     <input type="text" name="created_by" value="{{ email.created_by.id}}" hidden class="form-control">
@@ -67,8 +67,8 @@
                     <input type="text" name="port" value="{{ email.port}}" class="form-control" required>
                 </div>
                 <div class="input-group mb-3">
-                    <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">from_email</label>
-                    <input type="text" name="from_email" value="{{ email.from_email}}" class="form-control" required>
+                    <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">email_name</label>
+                    <input type="text" name="email_name" value="{{ email.email_name}}" class="form-control" required>
                 </div>
                 <div class="input-group mb-3">
                     <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">username</label>

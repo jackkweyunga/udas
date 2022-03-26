@@ -10,14 +10,14 @@ class ConfiguredEmailBackend(EmailBackend):
 
         from users.models import DynamicEmailConfiguration
         
-        email_name = kwargs.get('email_name', None)
+        email_configuration_name = kwargs.get('email_configuration_name', None)
         
         # checking for the required email configurations
-        if email_name is not None:
-            if DynamicEmailConfiguration.objects.filter(email_name=email_name).first():
-                configuration = DynamicEmailConfiguration.objects.filter(email_name=email_name).first()
+        if email_configuration_name is not None:
+            if DynamicEmailConfiguration.objects.filter(name=email_configuration_name).first():
+                configuration = DynamicEmailConfiguration.objects.filter(name=email_configuration_name).first()
         else:
-            configuration = DynamicEmailConfiguration.objects.filter(email_name='admin').first()
+            raise Exception("Email Configuration Name provided is not present in DB")
 
         super(ConfiguredEmailBackend, self).__init__(
              host = configuration.host if host is None else host,

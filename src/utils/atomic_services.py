@@ -7,7 +7,10 @@ from django.forms import ValidationError
 
 from utils.helpers import get_now
 
-from users.models import Service, ServiceUser, SystemLogs, User
+# models
+from services.models import Service, ServiceUser
+from systemlogging.models import SystemLogs
+from users.models import User
 
 
 def user_create(email, password=None, **extra_fields) -> User:

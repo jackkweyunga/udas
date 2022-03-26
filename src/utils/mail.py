@@ -7,7 +7,7 @@ from django.utils.module_loading import import_string
 from django.conf import settings
 from utils.email_backend import ConfiguredEmailBackend
 
-def get_connection(backend=None, fail_silently=False, email_name=None, **kwds):
+def get_connection(backend=None, fail_silently=False, email_configuration_name=None, **kwds):
     """Load an email backend and return an instance of it.
 
     If backend is None (default), use settings.EMAIL_BACKEND.
@@ -16,7 +16,7 @@ def get_connection(backend=None, fail_silently=False, email_name=None, **kwds):
     constructor of the backend.
     """
     klass = ConfiguredEmailBackend
-    return klass(fail_silently=fail_silently, email_name=email_name, **kwds)
+    return klass(fail_silently=fail_silently, email_configuration_name=email_configuration_name, **kwds)
 
 
 
@@ -25,13 +25,13 @@ class EmailMessage(EM):
     
     def __init__(self, subject='', body='', from_email=None, to=None, bcc=None,
                  connection=None, attachments=None, headers=None, cc=None,
-                 reply_to=None, email_name=None):
-        self.email_name = email_name
+                 reply_to=None, email_configuration_name=None):
+        self.email_configuration_name = email_configuration_name
         super().__init__(subject, body, from_email, to, bcc, connection, attachments, headers, cc, reply_to)
     
     def get_connection(self, fail_silently=False):
         if not self.connection:
-            self.connection = get_connection(fail_silently=fail_silently, email_name=self.email_name)
+            self.connection = get_connection(fail_silently=fail_silently, email_configuration_name=self.email_configuration_name)
         return self.connection
 
 

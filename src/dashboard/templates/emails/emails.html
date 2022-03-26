@@ -37,15 +37,15 @@
         <tbody>
             {% for email in emails %}
             <tr>
-                <td>{{ email.email_name}}</td>
+                <td>{{ email.name}}</td>
                 <td>{{ email.slug}}</td>
                 <td>{{ email.host}}</td>
-                <td>{{ email.from_email}}</td>
+                <td>{{ email.email_name}}</td>
                 <td>{{ email.username}}</td>
                 <td>
-                    <button class="btn">
+                    <a href="{% url 'email-delete' email.id %}" class="btn">
                         <i class="bi bi-trash"></i>
-                    </button>
+                    </a>
                     <button class="btn">
                         <i class="bi bi-pen"></i>
                     </button>
@@ -61,7 +61,7 @@
                 <th>Name</th>
                 <th>Slug</th>
                 <th>Host</th>
-                <th>From_email</th>
+                <th>email name</th>
                 <th>Username</th>
                 <th>Actions</th>
             </tr>
@@ -86,9 +86,9 @@
             <form action="{% url 'emails' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-body">
-                    <input type="text" required placeholder="name or id | unique" class="form-control mb-3" name="email_name" id="">
+                    <input type="text" required placeholder="name or id | unique" class="form-control mb-3" name="name" id="">
                     <input type="email" required placeholder="your email" class="form-control mb-3" name="username" id="">
-                    <input type="text" required placeholder="from name" class="form-control mb-3" name="from_email" id="">
+                    <input type="text" required placeholder="from name" class="form-control mb-3" name="email_name" id="">
                     <input type="password" required class="form-control mb-3" name="password" id="">
                     <input type="text" required class="form-control mb-3" name="host" value="smtp.gmail.com" id="">
                     <input type="number" required class="form-control mb-3" name="port" value="587" id="">
