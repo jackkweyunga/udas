@@ -29,10 +29,10 @@
                                 <input type="text" name="emails" class="form-control">
                                 <small class="help-text">use comma(s) to separate multiple emails</small>
                             </div>
-                            
+
                             <button type="submit" class="btn btn-primary">
                                 send <i data-feather="send" class="mx-2"></i>
-                            </button> 
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
             <h4>Edit form</h4>
             <hr>
             <form action="{% url 'email' email.id %}" method="post">
-                
+
                 {% csrf_token %}
                 <div class="input-group mb-3">
                     <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">name</label>
@@ -67,15 +67,18 @@
                     <input type="text" name="port" value="{{ email.port}}" class="form-control" required>
                 </div>
                 <div class="input-group mb-3">
-                    <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">email_name</label>
+                    <label for="" class="w-25 input-group-text"
+                        style="border: 0ch;background: inherit;">email_name</label>
                     <input type="text" name="email_name" value="{{ email.email_name}}" class="form-control" required>
                 </div>
                 <div class="input-group mb-3">
-                    <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">username</label>
+                    <label for="" class="w-25 input-group-text"
+                        style="border: 0ch;background: inherit;">username</label>
                     <input type="text" name="username" value="{{ email.username}}" class="form-control" required>
                 </div>
                 <div class="input-group mb-3">
-                    <label for="" class="w-25 input-group-text" style="border: 0ch;background: inherit;">password</label>
+                    <label for="" class="w-25 input-group-text"
+                        style="border: 0ch;background: inherit;">password</label>
                     <input type="password" name="password" value="{{ email.password}}" class="form-control" required>
                 </div>
 
@@ -86,26 +89,28 @@
             </form>
 
             <hr>
-            <h4> Email Logs </h4>
             <table id="emails-list" class="table bg-white" style="width:100%">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>
+                            <small>Email Logs</small>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for email in emails %}
+                    {% for log in email_logs %}
                     <tr>
-                        <td></td>
+                        <td align="justify" class="p-0 m-0">
+                            {% if log.log_level == 1%}
+                            <span class="bg-danger px-2 py-3 text-white d-flex shadow">{{log}}</span>
+                            {% else %}
+                            <span class="bg-info px-2 py-3 shadow d-flex">  {{log}}</span>
+                            {% endif %}
+                        </td>
 
                     </tr>
                     {% endfor %}
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

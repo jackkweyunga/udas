@@ -35,7 +35,7 @@ def send_test_email(request, email_id):
                 config.email_name,
             ).load_template()
 
-            async_send_email(
+            async_send_email.delay(
                 subject=subject,
                 body=body,
                 to=emails,

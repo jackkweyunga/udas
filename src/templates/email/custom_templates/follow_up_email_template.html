@@ -3,22 +3,23 @@
         <tr height="32" style="height:32px">
             <td></td>
         </tr>
-        <tr align="center">
+        <tr align="justify">
             <td>
                 <div>
                     <div></div>
                 </div>
                 <table border="0" cellspacing="0" cellpadding="0"
-                    style="padding-bottom:20px;display: flex;width: 100%;">
+                    style="padding-bottom:20px;display: flex;flex-direction:column;width: 100%;">
                     <tbody style="display: flex;flex-direction: column;width: 100%;">
-                        <tr style="display: flex;width: 100%;">
-                            <td style="width:100%;display:flex;flex-direction: column;">
-                                <div style="display:flex;flex-direction:column;width:100%;border-style:solid;border-width:thin;border-color:#dadce0;border-radius:8px;padding:40px 20px"
-                                    align="center" class="m_-8739555827287931345mdv2rw">
+                        <tr align="center" style="width:100%;">
+                            <td align="center" valign="top" style="width: 100%;">
+                                <div style="width:100%;border-style:solid;border-width:thin;border-color:#dadce0;border-radius:8px;padding:40px 20px;width:100%;"
+                                    align="center">
 
                                     {% if logo_url %}
                                     <img src="{{ logo_url }}" width="74" height="74" aria-hidden="true"
-                                        style="margin-bottom:16px" alt="{{ email_configuration_email_name }}" class="CToWUd">
+                                        style="margin-bottom:16px" alt="{{ email_configuration_email_name }}"
+                                        class="CToWUd">
                                     {% endif %}
                                     <div
                                         style="font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-bottom:thin solid #dadce0;color:rgba(0,0,0,0.87);line-height:32px;padding-bottom:24px;text-align:center;word-break:break-word">
@@ -28,24 +29,15 @@
                                         {% endautoescape%}
 
                                     </div>
-                                    <div style="padding-top:20px;font-size:12px;line-height:16px;color:#5f6368;letter-spacing:0.3px;text-align:center">
+                                    <div
+                                        style="padding-top:20px;font-size:12px;line-height:16px;color:#5f6368;letter-spacing:0.3px;text-align:center">
                                         Regards from {{ email_configuration_email_name }} <br>
-                                        {% if website_url %}  <a style="color:rgba(0,0,0,0.87);text-decoration:inherit">{{ website_url }}<wbr></a> {% endif %}
+                                        {% if website_url %} <a
+                                            style="color:rgba(0,0,0,0.87);text-decoration:inherit">{{ website_url
+                                            }}<wbr></a> {% endif %}
                                     </div>
                                 </div>
-                                <div style="text-align:left">
-                                    <div style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
-                                        {% if reason_for_receiving %}
-                                        <div> {{ reason_for_receiving }}</div>
-                                        {% endif %}
-                                        <div style="direction:ltr">
-                                            Powered by 
-                                            <a class="m_-8739555827287931345afal" style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
-                                                janjas
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </td>
                         </tr>
                     </tbody>
@@ -53,7 +45,23 @@
             </td>
         </tr>
         <tr height="32" style="height:32px">
-            <td></td>
+            <td>
+                <div style="text-align:left">
+                    <div
+                        style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
+                        {% if reason_for_receiving %}
+                        <div> {{ reason_for_receiving }}</div>
+                        {% endif %}
+                        <div style="direction:ltr">
+                            Powered by
+                            <a class="m_-8739555827287931345afal"
+                                style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
+                                janjas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

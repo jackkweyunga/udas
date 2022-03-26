@@ -93,6 +93,7 @@ class email_view(LoginRequired, View):
         
         context = {
             "email": email,
+            "email_logs": SystemLogs.objects.filter(log_content__icontains=email.name).order_by("-id")
         }
         
         return render(request, 'emails/email_view.html', context=context)

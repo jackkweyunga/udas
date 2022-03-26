@@ -278,10 +278,10 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         {
             "subject":"",
             "body": "",
-            "recipient_list":[""],
+            "recipients":"",
             "template_type":"",
             "email_name":"admin",
-            "email_key":"the key here"
+            "email_key":""
         }
         
         
@@ -290,7 +290,7 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         subject = serializers.CharField()
         body = serializers.CharField()
         template_type = serializers.CharField(required=False, default="follow_up")
-        recipient_list = serializers.ListField()
+        recipients = serializers.CharField()
         email_name = serializers.CharField(required=False, default='admin')
         email_key = serializers.CharField()
 
@@ -305,7 +305,7 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
         key = validated_data.get('email_key') or None
         
         if email_configuration_name != None:
-            config = DynamicEmailConfiguration.objects.filter(email_name=f"{email_configuration_name}", email_key=key).first()
+            config = DynamicEmailConfiguration.objects.filter(name=f"{email_configuration_name}", email_key=key).first()
             if not config:
                 data = {
                     'message': f'The name {email_configuration_name} with key provided is not registered as an emailer. Plz visit your developers console to create one.',
@@ -313,7 +313,7 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
                     }
                 return Response(data, status=data['status'])
 
-        to = validated_data.get('recipient_list')
+        to = str(validated_data.get('recipients')).split(",")
         email_body = validated_data.get('body')
         
         if validated_data.get('template_type', "follow_up") == "follow_up":
@@ -327,11 +327,11 @@ class SendEmailApiView(PublicApiMixin, ApiErrorsMixin, APIView):
             "subject" : validated_data.get('subject'),
             "body" : body.load_template(),
             "to": to,
-            "email_configration_email_name":config.from_email,
+            "email_configuration_email_name":config.email_name,
             "email_configuration_name":email_configuration_name
         }
         
-        async_send_email(**email)
+        async_send_email.delay(**email)
         
 
             # example
