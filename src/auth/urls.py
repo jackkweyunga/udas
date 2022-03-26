@@ -20,6 +20,7 @@ from dashboard.views import login_view, logout_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('smsbot/', include('smsbot.urls')),
     path('', include('dashboard.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('login/', login_view, name="login"),

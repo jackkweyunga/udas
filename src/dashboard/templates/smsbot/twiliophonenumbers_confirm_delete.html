@@ -1,0 +1,21 @@
+
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block main %}
+
+<div class="container w-100 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <form class="form d-flex flex-column justify-content-center align-items-center" method="post">{% csrf_token %}
+
+        <p class="mb-4">Are you sure you want to delete <b>"{{ object }}"?</b></p>
+        
+        <br>
+        <div class="d-flex w-100 justify-content-between">
+            <a href="{% url 'smsbots'%}" class="btn btn-danger shadow-sm" value="Confirm">cancel</a>
+            <input type="submit" class="btn btn-secondary shadow-sm" value="Confirm">
+        </div>
+        
+    </form>
+</div>
+
+
+{% endblock %}

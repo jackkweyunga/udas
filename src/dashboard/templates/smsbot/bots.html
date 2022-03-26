@@ -1,0 +1,136 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+
+{% block main %}
+
+<div class="container bg-light">
+
+
+    <nav class="nav nav-list mb-2">
+        <div class="container p-0 d-flex justify-content-between align-items-center ">
+            <button class="shadow-sm btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#addBot">
+                <i class="bi bi-plus"></i>
+                register a bot
+            </button>
+
+            <span class="">
+                {{twiliobots_phonenumbers_count}} - bot(s)
+            </span>
+        </div>
+    </nav>
+
+    <table id="services-list" class="table bg-white" style="width:100%">
+        <thead>
+            <tr>
+                <th>bot</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for number in twiliobots_phonenumbers %}
+            <tr>
+                <td class="p-2 m-0 d-flex">
+                    <a href="{% url 'smsbot' number.id %}"
+                    class="d-flex px-2 py-2 w-75" style="text-decoration: none;"
+                    >
+                        {{ number.number}}
+                    </a>
+                
+                    <a href="{% url 'smsbot-delete' number.id%}" class="btn d-flex shadow mx-1">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                    <i class="bi bi-pen btn d-flex shadow" style="cursor: pointer;" data-bs-toggle="modal"
+                        data-bs-target="#editService{{service.service_id}}"></i>
+                    <!-- Modal -->
+                    <div class="modal fade" id="editService{{service.service_id}}" tabindex="-1" role="dialog"
+                        aria-labelledby="editService{{service.service_id}}" aria-hidden="true">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Edit</h5>
+                                    <button type="button" class="btn btn-sm" data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                        <i class="fa fa-window-close"></i>
+                                    </button>
+                                </div>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="d-flex flex-column">
+                                            <label for="" class="input-group-text mb-3">id</label>
+                                            <input type="text" name="name"
+                                                value="{{number.settings.twilio_account_name}}" class="form-control mb-3">
+                                            <input type="text" name="sid" value="{{number.settings.twilio_account_sid}}"
+                                                class="form-control mb-3">
+                                            <input type="text" name="token"
+                                                value="{{number.settings.twilio_auth_token}}" class="form-control mb-3">
+                                            <input type="phone" name="phone" value="{{number.number}}"
+                                                class="form-control mb-3">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addBot" tabindex="-1" role="dialog" aria-labelledby="addBot" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a bot</h5>
+                <button type="button" class="btn btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-window-close"></i>
+                </button>
+
+            </div>
+            <form action="{% url 'smsbots'%}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="d-flex flex-column">
+                        <input type="text" placeholder="bot unique name" name="name"
+                            class="form-control mb-3">
+                        <input type="text" placeholder="twilio sid" name="sid"
+                            class="form-control mb-3">
+                        <input type="text" placeholder="twilio token" name="token"
+                            class="form-control mb-3">
+                        <input type="phone" placeholder="phone number" name="phone" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#services-list').DataTable();
+    });
+</script>
+
+{% endblock %}

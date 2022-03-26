@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'users.apps.UsersConfig',
     'authnotifications.apps.AuthnotificationsConfig',
+    'smsbot.apps.SmsbotConfig',
     'systemlogging.apps.SystemloggingConfig',
 
     # rest

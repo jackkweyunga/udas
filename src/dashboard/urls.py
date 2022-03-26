@@ -20,7 +20,12 @@ urlpatterns = [
     path("email/<int:id>/", views.email_view.as_view(), name="email"),
     path("send_test_email/<int:email_id>/", email_views.send_test_email , name="send_test_email"),
     
-    
+    # smsbot
+    path('smsbots/', views.SmsBotsView.as_view(), name="smsbots"),
+    path('smsbots/<pk>/delete', views.SmsBotDeleteView.as_view(), name="smsbot-delete"),
+    path("smsbot/<int:id>/", views.SmsBotView.as_view(), name="smsbot"),
+
+
     # service paths/urls
     path('services/', views.ServicesView.as_view(), name="services-dashboard"),
     path('services/add', views.add_service.as_view(), name="services-add"),

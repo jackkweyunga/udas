@@ -1,3 +1,6 @@
+from multiprocessing import context
+import numbers
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views import View, generic
 
@@ -6,7 +9,7 @@ from users.models import User
 from systemlogging.models import SystemLogs
 from emails.models import DynamicEmailConfiguration
 from services.models import Service, ServicePackage, ServiceUser, ServiceUserSubscription
-
+from smsbot.models import TwilioPhoneNumbers, TwilioAccountSettings
 
 from utils.atomic_services import user_create
 from utils.email_templates import FollowUpEmailTemplate
@@ -122,11 +125,79 @@ class email_view(LoginRequired, View):
         return redirect('email', id=email.id)
 
 
-class EmailConfigurationDeleteView(generic.DeleteView):
+class EmailConfigurationDeleteView(LoginRequired, generic.DeleteView):
 
     model = DynamicEmailConfiguration
     success_url = "/dashboard/emails/"
     
+
+# SMS BOTS
+
+class SmsBotsView(LoginRequired, View):
+    
+    def get(self, request):
+
+        context = {
+            "twiliobots_phonenumbers": TwilioPhoneNumbers.objects.all().order_by("-id"),
+            "twiliobots_settings": TwilioAccountSettings.objects.all().order_by("-id"),
+            "twiliobots_settings_count": TwilioAccountSettings.objects.all().count(),
+            "twiliobots_phonenumbers_count": TwilioPhoneNumbers.objects.all().count() 
+        }
+
+        return render(request, "smsbot/bots.html", context)
+
+
+    def post(self, request):
+
+        data = request.POST
+
+        account_name = data["name"]
+        account_sid = data["sid"]
+        auth_token = data["token"]
+        phone_number = data["phone"]
+
+        # add settings
+        twilio_setting = TwilioAccountSettings(
+            twilio_account_name=account_name,
+            twilio_account_sid=account_sid,
+            twilio_auth_token=auth_token
+        ) 
+
+        twilio_setting.save()
+
+        twilio_phonenumber = TwilioPhoneNumbers(
+            settings=twilio_setting,
+            number=phone_number
+        )
+
+        twilio_phonenumber.save()
+
+        return redirect("smsbots")
+        
+
+
+
+class SmsBotView(LoginRequired, View):
+    
+    def get(self, request, id):
+
+        bot = TwilioPhoneNumbers.objects.filter(id=id).first()
+
+        context = {
+            "bot":bot
+        }
+
+        return render(request, "smsbot/bot.html", context)
+
+    def post(self, request):
+        pass
+
+
+class SmsBotDeleteView(LoginRequired, generic.DeleteView):
+    model = TwilioPhoneNumbers
+    success_url = "/dashboard/smsbots/"
+
+
     
 class UsersView(LoginRequired, View):
     
