@@ -8,9 +8,10 @@ class ConfiguredEmailBackend(EmailBackend):
                  ssl_keyfile=None, ssl_certfile=None,
                  **kwargs):
 
-        from users.models import DynamicEmailConfiguration
+        from emails.models import DynamicEmailConfiguration
         
         email_configuration_name = kwargs.get('email_configuration_name', None)
+        
         
         # checking for the required email configurations
         if email_configuration_name is not None:
@@ -18,6 +19,7 @@ class ConfiguredEmailBackend(EmailBackend):
                 configuration = DynamicEmailConfiguration.objects.filter(name=email_configuration_name).first()
         else:
             raise Exception("Email Configuration Name provided is not present in DB")
+
 
         super(ConfiguredEmailBackend, self).__init__(
              host = configuration.host if host is None else host,

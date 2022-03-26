@@ -1,6 +1,6 @@
 from django.urls import path
 import dashboard.views as views
-import users.views as user_views
+import emails.views as email_views
 
 
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path('emails/', views.EmailsView.as_view(), name="emails"),
     path('emails/<pk>/delete', views.EmailConfigurationDeleteView.as_view(), name="email-delete"),
     path("email/<int:id>/", views.email_view.as_view(), name="email"),
-    path("send_test_email/<int:email_id>/", user_views.send_test_email , name="send_test_email"),
+    path("send_test_email/<int:email_id>/", email_views.send_test_email , name="send_test_email"),
     
     
     # service paths/urls

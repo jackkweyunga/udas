@@ -1,5 +1,6 @@
 
 
+import email
 from django.core.mail.message import EmailMultiAlternatives
 from django.core.mail.message import EmailMessage as EM
 
@@ -38,7 +39,7 @@ class EmailMessage(EM):
 
 def send_mail(subject, message, from_email, recipient_list,
               fail_silently=False, auth_user=None, auth_password=None,
-              connection=None, html_message=None, email_name=None):
+              connection=None, html_message=None, email_configuration_name=None):
     """
     Easy wrapper for sending a single message to a recipient list. All members
     of the recipient list will see the other recipients in the 'To' field.
@@ -54,7 +55,7 @@ def send_mail(subject, message, from_email, recipient_list,
         username=auth_user,
         password=auth_password,
         fail_silently=fail_silently,
-        email_name=email_name
+        email_configuration_name=email_configuration_name
     )
     mail = EmailMultiAlternatives(subject, message, from_email, recipient_list, connection=connection)
     if html_message:
