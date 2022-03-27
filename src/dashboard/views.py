@@ -257,7 +257,7 @@ class ServicesView(LoginRequired, View):
             "count": all.count()
         }
         
-        return render(request, 'dashboard/services/services.html', context)
+        return render(request, 'services/services.html', context)
 
 
 class add_service(LoginRequired, View):

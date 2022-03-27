@@ -1,0 +1,41 @@
+{
+    "Intents": {
+        "salamu": {
+            "Questions": [
+                "Habari",
+                "Hi"
+            ],
+            "Answers": [
+                "Karibu Fukate"                
+            ]
+        },
+        "shukrani": {
+            "Questions": [
+                "Asante"
+            ],
+            "Answers": [
+                "Karibu tena."
+            ]
+        },
+        "daktari": {
+            "Questions": [
+                "Asante"
+            ],
+            "Answers": [
+                "Aina gani ya daktari. \n",
+                "1. Binafsi \n",
+                "2. Umma"
+            ]
+        }
+    },
+    "Options": {
+        "daktari": {
+            "1": [
+                "daktari binafsi"
+            ],
+            "2": [
+                "daktari wa umma"
+            ]
+        }
+    }
+}

@@ -4,6 +4,8 @@ from .twilio_send_sms import send_sms
 @shared_task
 def send_test_sms(bot_id, to, message="This is a test sms"):
 
+    message = ""
+
     try:
         return send_sms(
             bot_id=bot_id,

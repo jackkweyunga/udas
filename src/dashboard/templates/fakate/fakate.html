@@ -1,0 +1,56 @@
+
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container bg-light">
+
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>
+                        <i class="bi bi-envelope"></i>
+                        Fakate
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col">
+                    <h3><small>fakate Lables</small></h3>
+                    <hr>
+                    <div></div>
+                </div>
+            </div>            
+            <div class="row">
+                <div class="col">
+                    <h3><small>fakate Intent</small></h3>
+                    <hr>
+                    <div></div>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}
