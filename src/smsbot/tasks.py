@@ -1,5 +1,6 @@
 from celery import shared_task
 from .twilio_send_sms import send_sms
+from whatsaapbot.tasks import send_whatsaap_message
 
 @shared_task
 def send_test_sms(bot_id, to, message="This is a test sms"):
