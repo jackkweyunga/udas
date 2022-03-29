@@ -54,9 +54,15 @@
                     <div class="d-flex flex-column">
                         {% for log in sys_logs%}
                         {% if log.log_level == 1%}
-                        <span class="bg-danger text-white shadow px-2 py-3">{{log}}</span>
+                        <span class=" px-2 py-3">
+                            <i class="fa fa-exclamation-triangle text-danger mr-2"></i>
+                            <small>{{log}}</small>
+                        </span>
                         {% else %}
-                        <span class="bg-info shadow px-2 py-3">{{log}}</span>
+                        <span class=" px-2 py-3">
+                            <i class="fa fa-info-circle text-primary mr-2"></i>
+                            <small>{{log}}</small>
+                        </span>
                         {% endif %}
                         {%endfor%}
                     </div>

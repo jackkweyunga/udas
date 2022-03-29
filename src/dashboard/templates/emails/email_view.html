@@ -100,11 +100,17 @@
                 <tbody>
                     {% for log in email_logs %}
                     <tr>
-                        <td align="justify" class="p-0 m-0">
+                        <td align="justify" class="p-2 m-0">
                             {% if log.log_level == 1%}
-                            <span class="bg-danger px-2 py-3 text-white d-flex shadow">{{log}}</span>
+                            <span class=" px-2 py-3">
+                                <i class="fa fa-exclamation-triangle text-danger mr-2"></i>
+                                <small>{{log}}</small>
+                            </span>
                             {% else %}
-                            <span class="bg-info px-2 py-3 shadow d-flex">  {{log}}</span>
+                            <span class=" px-2 py-3">
+                                <i class="fa fa-info-circle text-primary mr-2"></i>
+                                <small>{{log}}</small>
+                            </span>
                             {% endif %}
                         </td>
 

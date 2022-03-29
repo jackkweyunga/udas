@@ -1,39 +1,130 @@
-
 {% extends 'dashboard/dashboard_base.html' %}
 
+{% block styles %}
+
+{% load static%}
+<link href="{% static 'jsoneditor/css/jsoneditor.css' %}" rel="stylesheet" type="text/css">
+
+<style>
+    #intents_jsoneditor {
+        width: 100%;
+        height: 500px;
+    }
+
+    #labels_jsoneditor {
+        width: 100%;
+        height: 500px;
+    }
+
+    #message-box {
+        width: 100%;
+        height: 350px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+        display: flex;
+        flex-direction: column-reverse;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    #sent-msg, #rcv-msg {
+        width: 100%;
+        margin: 5px;
+    }
+
+    #sent-msg span {
+        padding: 10px;
+        background-color: rgba(192, 192, 192, 0.65);
+        color: rgb(12, 4, 4);
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: small;
+    }
+
+    #rcv-msg span {
+        padding: 10px;
+        background-color: #3883FA;
+        color: #FFFFFF;
+        font-weight: 500;
+        border-radius: 10px;
+        font-size: small;
+    }
+
+    #sent-msg {
+        display: flex;
+        justify-content: flex-start;
+        margin: 5px;
+    }
+
+    #rcv-msg {
+        display: flex;
+        justify-content: flex-end;
+        margin: 5px;
+    }
+
+    #d {
+        font-size: small;
+    }
+
+</style>
+
+{% endblock %}
 
 
 {% block main %}
 
 <div class="container bg-light">
-
-
     <div class="row g-3">
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5>
-                        <i class="bi bi-envelope"></i>
-                        Fakate
-                    </h5>
-                </div>
-            </div>
+            <small>
+                <h2>
+                    {{ b_data }}
+                </h2>
+            </small>
+            <small>
+                Test ground
+                <small id="socket_connection"></small>
+            </small>
+            <hr>
+            <table class="table">
+                <tr class="w-100">
+                    <div class="d-flex flex-column w-100">
+                        <div class="row shadow-sm" >
+                            <div class="col bg-white" id="message-box">
+
+                            </div>
+                        </div>
+                        <div class="row shadow-sm">
+                            <div class="col p-2 d-flex justify-content-between w-100 bg-white">
+                                <input id="q" class="d-flex form-control" type="text" name="q" id="">
+                            
+                                <button id="qbtn" class="btn bnt-sm d-flex">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </tr>
+            </table>
         </div>
         <div class="col-md-8">
             <div class="row">
                 <div class="col">
-                    <h3><small>fakate Lables</small></h3>
-                    <hr>
-                    <div></div>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <small>Labels</small>
+                                <hr>
+                                <div id="labels_jsoneditor" class="mb-3"></div>
+                            </tr>
+                            <tr>
+                                <small>Intents</small>
+                                <hr>
+                                <div id="intents_jsoneditor" class="mb-3"></div>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>            
-            <div class="row">
-                <div class="col">
-                    <h3><small>fakate Intent</small></h3>
-                    <hr>
-                    <div></div>
-                </div>
-            </div>            
+            </div>
         </div>
     </div>
 
@@ -46,11 +137,93 @@
 
 {% endblock %}
 
-{% block extrascripts %}
+{% block scripts %}
 <script>
     $(document).ready(function () {
         $('#emails-list').DataTable();
     });
+</script>
+{% load static%}
+<script src="{% static 'jsoneditor/js/jsoneditor.js' %}"></script>
+
+<script>
+    // create the editor
+    const intents = document.querySelector("#intents_jsoneditor")
+    const labels = document.querySelector("#labels_jsoneditor")
+
+    const options = {
+        mode: 'code'
+      }
+
+    const intents_editor = new JSONEditor(intents, options)
+    const labels_editor = new JSONEditor(labels, options)
+    
+    intentsData = JSON.parse("{{b_data.intents}}");
+    labelsData = JSON.parse("{{b_data.labels}}")
+    intents_editor.set(intentsData)
+    labels_editor.set(labelsData)
+
+    // get json
+    const updatedIntents = intents_editor.get()
+    const updatedLabels = labels_editor.get()
+
+    var bot_id = '{{b_data.id}}';
+    // console.log(bot_id);
+
+    // Web sockets
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/bot/');
+
+    socket.onopen = function open() {
+        console.log("Web socket connection started");
+        toSend = JSON.stringify({
+                "id":bot_id
+            })
+        
+        var cshow = document.querySelector("#socket_connection");
+        cshow.innerHTML = '<span class="text-success"> connected <i class="fa fa-check"></i></span>';
+        socket.send(toSend)
+    }
+
+    if (socket.readyState == WebSocket.OPEN) {
+        socket.onopen();
+    }
+
+    var qbtn = document.querySelector("#qbtn")
+    var q = document.getElementById("q")
+    var msgbox = document.getElementById("message-box")
+
+    qbtn.addEventListener('click', ()=>{
+        // console.log(q.value)
+
+        var sentmsg= document.createElement("div")
+        sentmsg.id = "sent-msg"
+        sentmsg.innerHTML = `<span>${q.value}</span>`
+        msgbox.prepend(sentmsg)
+
+        var toSend = JSON.stringify({
+            "type":"q",
+            "question":q.value
+        })
+        socket.send(toSend)
+    })
+
+    socket.onmessage = (e)=>{
+        console.log(e.data)
+
+        e = JSON.parse(e.data)
+
+        if (e["type"] == "a") {
+            // handle reply
+
+            var rcvmsg= document.createElement("div")
+            rcvmsg.id = "rcv-msg"
+            rcvmsg.innerHTML = `<span>${e["answer"]}</span>`
+            msgbox.prepend(rcvmsg)
+
+        }
+    }
+
+
 </script>
 
 {% endblock %}
