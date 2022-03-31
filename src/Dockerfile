@@ -6,7 +6,7 @@
 # auth --> the name of your django project
 
 
-FROM python:3.8.3-alpine AS base
+FROM python:3.8-slim
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -29,49 +29,11 @@ WORKDIR $APP_HOME
 COPY ./requirements.txt .
 
 # installing dev dependencies
-RUN apk update \
-    # build deps
-    && apk add --no-cache --upgrade --virtual build-deps \
-    build-base \
-    curl \
-    ca-certificates \
-    openssl \
-    less \
-    htop \
-    gcc \
-    g++ \
-    make \
-    musl-dev \
-    python3-dev \
-    wget \
-    rsync \
-    # non build deps
-    && apk add --no-cache openssl-dev \
-    libpng-dev \
-    freetype-dev \
-    libexecinfo-dev \
-    libgomp \
-    lapack-dev \
-    jpeg-dev \
-    libjpeg \
-    libffi-dev \
-    libgcc \
-    libquadmath \
-	libgfortran \
-	lapack-dev \
-    musl  \
-    openssh \
-    openblas-dev \
-    postgresql \
-    postgresql-dev \
-    zlib-dev \
-    && python -m venv env \
+RUN python -m venv env \
     && source ./env/bin/activate \
     && pip install --upgrade pip \
-    && pip install psycopg2 \
-    && pip install -r requirements.txt \
-    && apk del build-deps \
-    && rm -rf .cache
+    && pip install --no-cache-dir psycopg2-binary \
+    && pip install --no-cache-dir -r requirements.txt \
 
 # copying the project folder into the image
 COPY . $APP_HOME
