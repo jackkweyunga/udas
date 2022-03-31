@@ -21,9 +21,11 @@ RUN addgroup -S janjas && adduser -S janjas -G janjas
 # create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/src
-RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/staticfiles
-RUN mkdir $APP_HOME/mediafiles
+
+RUN mkdir $APP_HOME \
+    && mkdir $APP_HOME/staticfiles \
+    && mkdir $APP_HOME/mediafiles
+    
 WORKDIR $APP_HOME
 
 COPY ./requirements.txt .
@@ -33,7 +35,7 @@ RUN python -m venv env \
     && source ./env/bin/activate \
     && pip install --upgrade pip \
     && pip install --no-cache-dir psycopg2-binary \
-    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --user -r requirements.txt
 
 # copying the project folder into the image
 COPY . $APP_HOME
