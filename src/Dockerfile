@@ -70,7 +70,7 @@ RUN apk update \
     && pip install --upgrade pip \
     && pip install psycopg2 \
     && pip install -r requirements.txt \
-    && apk del build-deps
+    && apk del build-deps \
     && rm -rf .cache
 
 # copying the project folder into the image
