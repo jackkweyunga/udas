@@ -30,15 +30,46 @@ COPY ./requirements.txt .
 
 # installing dev dependencies
 RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    # build deps
+    && apk add --upgrade --virtual build-deps \
+    curl \
+    ca-certificates \
+    openssl \
+    less \
+    htop \
+    gcc \
+    g++ \
+    make \
+    musl-dev \
+    python3-dev \
+    wget \
+    rsync \
+    # non build deps
     && apk add openssl-dev \
-    && apk add postgresql \
-    && apk add postgresql-dev \
+    bash \
+    build-base \
+    libpng-dev \
+    freetype-dev \
+    libexecinfo-dev \
+    libgomp \
+    lapack-dev \
+    jpeg-dev \
+    libjpeg \
+    libffi-dev \
+    libgcc \
+    libquadmath \
+	libgfortran \
+	lapack-dev \
+    musl  \
+    openssh \
+    openblas-dev \
+    postgresql \
+    postgresql-dev \
+    zlib-dev \
     && python -m venv env \
     && source ./env/bin/activate \
     && pip install --upgrade pip \
     && pip install psycopg2 \
-    && apk add jpeg-dev zlib-dev libjpeg libffi-dev \
     && pip install -r requirements.txt \
     && apk del build-deps
 
