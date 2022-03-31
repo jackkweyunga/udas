@@ -31,7 +31,8 @@ COPY ./requirements.txt .
 # installing dev dependencies
 RUN apk update \
     # build deps
-    && apk add --upgrade --virtual build-deps \
+    && apk add --no-cache --upgrade --virtual build-deps \
+    build-base \
     curl \
     ca-certificates \
     openssl \
@@ -45,9 +46,7 @@ RUN apk update \
     wget \
     rsync \
     # non build deps
-    && apk add openssl-dev \
-    bash \
-    build-base \
+    && apk add --no-cache openssl-dev \
     libpng-dev \
     freetype-dev \
     libexecinfo-dev \
@@ -72,6 +71,7 @@ RUN apk update \
     && pip install psycopg2 \
     && pip install -r requirements.txt \
     && apk del build-deps
+    && rm -rf .cache
 
 # copying the project folder into the image
 COPY . $APP_HOME
