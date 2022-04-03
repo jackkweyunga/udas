@@ -15,8 +15,8 @@ WORKDIR app
 # installing dev dependencies
 RUN python3 -m venv env \
     && . ./env/bin/activate \
-    && pip3 install --upgrade pip \
-    && pip3 install --no-cache-dir psycopg2-binary \
+    && pip3 install --upgrade --user pip \
+    && pip3 install --no-cache-dir --user psycopg2-binary \
     && pip3 install --no-cache-dir --user -r requirements.txt
 
 # chown all the files to the app user
