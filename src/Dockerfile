@@ -14,7 +14,7 @@ WORKDIR app
 
 # installing dev dependencies
 RUN apt-get update \
-    && apt-get install libpq-dev \
+    && apt-get install -y libpq-dev \
     && python3 -m venv env \
     && . ./env/bin/activate \
     && pip3 install --upgrade pip \
