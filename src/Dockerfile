@@ -17,7 +17,7 @@ RUN apt-get update \
     && apt-get install -y \
         libpq-dev \
         gcc \
-    && apt-get clean
+    && apt-get clean \
     && python3 -m venv env \
     && . ./env/bin/activate \
     && pip3 install --upgrade pip \
