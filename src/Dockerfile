@@ -16,8 +16,8 @@ WORKDIR app
 RUN python3 -m venv env \
     && . ./env/bin/activate \
     && pip3 install --upgrade --user pip \
-    && pip3 install --no-cache-dir --user psycopg2-binary \
-    && pip3 install --no-cache-dir --user -r requirements.txt
+    && pip3 install --no-cache-dir psycopg2-binary \
+    && pip3 install --no-cache-dir -r requirements.txt
 
 # chown all the files to the app user
 RUN chown -R janjas:janjas .
