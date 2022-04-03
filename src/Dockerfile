@@ -13,11 +13,11 @@ COPY . /app
 WORKDIR app
 
 # installing dev dependencies
-RUN python -m venv env \
-    && source ./env/bin/activate \
-    && pip install --upgrade pip \
-    && pip install --no-cache-dir psycopg2-binary \
-    && pip install --no-cache-dir --user -r requirements.txt
+RUN python3 -m venv env \
+    && . ./env/bin/activate \
+    && pip3 install --upgrade pip \
+    && pip3 install --no-cache-dir psycopg2-binary \
+    && pip3 install --no-cache-dir --user -r requirements.txt
 
 # chown all the files to the app user
 RUN chown -R janjas:janjas .
@@ -28,7 +28,7 @@ USER janjas
 # initial commands
 # depend on the database --> never to be run alone. use docker-compose
 
-CMD source ./env/bin/activate \
+CMD . ./env/bin/activate \
     && python manage.py collectstatic -v 2 --noinput \
     && python manage.py makemigrations \
     && python manage.py migrate \
