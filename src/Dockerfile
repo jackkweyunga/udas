@@ -23,15 +23,6 @@ RUN apt-get update \
     && pip3 install --upgrade pip \
     && pip3 install --no-cache-dir -r requirements.txt
 
-# chown all the files to the app user
-RUN chown -R janjas:janjas .
-
-# change to the app user
-USER janjas
-
-# initial commands
-# depend on the database --> never to be run alone. use docker-compose
-
 CMD . ./env/bin/activate \
     && python manage.py collectstatic -v 2 --noinput \
     && python manage.py makemigrations \
