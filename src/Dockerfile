@@ -13,10 +13,11 @@ COPY . /app
 WORKDIR app
 
 # installing dev dependencies
-RUN python3 -m venv env \
+RUN apt-get update \
+    && apt-get install libpq-dev \
+    && python3 -m venv env \
     && . ./env/bin/activate \
     && pip3 install --upgrade pip \
-    && pip3 install --no-cache-dir psycopg2-binary \
     && pip3 install --no-cache-dir -r requirements.txt
 
 # chown all the files to the app user
