@@ -1,10 +1,5 @@
 ##### Django docker file template
 
-##### variables
-# janjas --> the name of the user in the image os
-# auth --> the name of your django project
-# auth --> the name of your django project
-
 
 FROM python:3.8-slim
 
