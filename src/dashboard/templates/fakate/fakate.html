@@ -11,10 +11,6 @@
         height: 500px;
     }
 
-    #labels_jsoneditor {
-        width: 100%;
-        height: 500px;
-    }
 
     #message-box {
         width: 100%;
@@ -26,7 +22,8 @@
         overflow-y: auto;
     }
 
-    #sent-msg, #rcv-msg {
+    #sent-msg,
+    #rcv-msg {
         width: 100%;
         margin: 5px;
     }
@@ -64,7 +61,6 @@
     #d {
         font-size: small;
     }
-
 </style>
 
 {% endblock %}
@@ -88,7 +84,7 @@
             <table class="table">
                 <tr class="w-100">
                     <div class="d-flex flex-column w-100">
-                        <div class="row shadow-sm" >
+                        <div class="row shadow-sm">
                             <div class="col bg-white" id="message-box">
 
                             </div>
@@ -96,7 +92,7 @@
                         <div class="row shadow-sm">
                             <div class="col p-2 d-flex justify-content-between w-100 bg-white">
                                 <input id="q" class="d-flex form-control" type="text" name="q" id="">
-                            
+
                                 <button id="qbtn" class="btn bnt-sm d-flex">
                                     <i class="fa fa-paper-plane"></i>
                                 </button>
@@ -112,12 +108,10 @@
                     <table class="table">
                         <tbody>
                             <tr>
-                                <small>Labels</small>
-                                <hr>
-                                <div id="labels_jsoneditor" class="mb-3"></div>
-                            </tr>
-                            <tr>
-                                <small>Intents</small>
+                                <div class="d-flex w-100 justify-content-between">
+                                    <small>Intents</small>
+                                    <span id="intents-loader"></span>
+                                </div>
                                 <hr>
                                 <div id="intents_jsoneditor" class="mb-3"></div>
                             </tr>
@@ -149,23 +143,19 @@
 <script>
     // create the editor
     const intents = document.querySelector("#intents_jsoneditor")
-    const labels = document.querySelector("#labels_jsoneditor")
+    var intents_loader = document.querySelector("#intents-loader")
 
     const options = {
         mode: 'code'
-      }
+    }
 
     const intents_editor = new JSONEditor(intents, options)
-    const labels_editor = new JSONEditor(labels, options)
-    
-    intentsData = JSON.parse("{{b_data.intents}}");
-    labelsData = JSON.parse("{{b_data.labels}}")
+
+    intentsData = JSON.parse("{{b_data_intents | escapejs}}");
     intents_editor.set(intentsData)
-    labels_editor.set(labelsData)
 
     // get json
-    const updatedIntents = intents_editor.get()
-    const updatedLabels = labels_editor.get()
+
 
     var bot_id = '{{b_data.id}}';
     // console.log(bot_id);
@@ -173,54 +163,102 @@
     // Web sockets
     var socket = new WebSocket('ws://' + window.location.host + '/ws/bot/');
 
+    var connecting_string = (s = 'Loading...') => {
+        console.log("in here")
+        return `<span class="text-success"> ${s} <i class="fa fa-check"></i></span>`;
+    }
+
+    var connected_string = (s = 'connected') => {
+        return `<span class="text-success"> ${s} <i class="fa fa-check"></i></span>`;
+    }
+
+    var connectLoad = (string) => {
+        var cshow = document.querySelector("#socket_connection");
+        cshow.innerHTML = string;
+    }
+
+    var intentsLoad = (string) => {
+        intents_loader.innerHTML = string;
+    }
+
     socket.onopen = function open() {
         console.log("Web socket connection started");
         toSend = JSON.stringify({
-                "id":bot_id
-            })
-        
-        var cshow = document.querySelector("#socket_connection");
-        cshow.innerHTML = '<span class="text-success"> connected <i class="fa fa-check"></i></span>';
+            "id": bot_id
+        })
+        connectLoad(connected_string())
         socket.send(toSend)
+
     }
+
 
     if (socket.readyState == WebSocket.OPEN) {
         socket.onopen();
     }
 
+    intents.addEventListener('keyup', (evt) => {
+        console.log("saving intents");
+        
+        try {
+            intentsLoad(connected_string("saved"))
+            var updatedIntents = intents_editor.get()
+            var toSend = JSON.stringify({
+                "type": "intents",
+                "data": updatedIntents,
+                "botname": "{{ b_data }}"
+            })
+            socket.send(toSend)
+            console.log(updatedIntents)
+        } catch (err) {
+            console.log(err);
+        }
+    })
+
     var qbtn = document.querySelector("#qbtn")
     var q = document.getElementById("q")
     var msgbox = document.getElementById("message-box")
 
-    qbtn.addEventListener('click', ()=>{
+    qbtn.addEventListener('click', (evt) => {
         // console.log(q.value)
 
-        var sentmsg= document.createElement("div")
+        var sentmsg = document.createElement("div")
         sentmsg.id = "sent-msg"
         sentmsg.innerHTML = `<span>${q.value}</span>`
         msgbox.prepend(sentmsg)
 
         var toSend = JSON.stringify({
-            "type":"q",
-            "question":q.value
+            "type": "q",
+            "botname": "{{ b_data }}",
+            "question": q.value
         })
         socket.send(toSend)
     })
 
-    socket.onmessage = (e)=>{
+    socket.onmessage = (e) => {
         console.log(e.data)
 
         e = JSON.parse(e.data)
 
-        if (e["type"] == "a") {
-            // handle reply
+        switch (e["type"]) {
 
-            var rcvmsg= document.createElement("div")
-            rcvmsg.id = "rcv-msg"
-            rcvmsg.innerHTML = `<span>${e["answer"]}</span>`
-            msgbox.prepend(rcvmsg)
+            case "a": // received an answer
+                var rcvmsg = document.createElement("div")
+                rcvmsg.id = "rcv-msg"
+                s = e["answer"].toString().replaceAll('\n','<br>')
+                rcvmsg.innerHTML = `<span>${s}</span>`
+                msgbox.prepend(rcvmsg)
+                break;
+
+            case "intents": // received new intents
+                // console.log(e["status"])
+                intentsLoad(connected_string("saved"))
+                break;
+
+            default:
+                break;
 
         }
+
     }
 
 

@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views import View
@@ -36,6 +37,7 @@ class FakateView(LoginRequired, View):
 
         context = {
             "b_data":t_Data,
+            "b_data_intents":json.dumps(t_Data.intents),
         }
 
         return render(request, 'fakate/fakate.html', context)
@@ -53,4 +55,3 @@ class FakateView(LoginRequired, View):
             messages.error(request, form.errors.as_text())
 
         return redirect('fakate-view', id=data["id"])
-

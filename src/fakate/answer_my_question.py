@@ -2,37 +2,36 @@ import json
 import joblib
 import pathlib
 
+from fakate.models import BotTrainingData
+
 # ========= load vectorizer and model ================
 
-dir = pathlib.Path(__file__).parent
+def v_m(botname):
+    bot = BotTrainingData.objects.filter(botname=botname).first()
 
-vectorizer = joblib.load(dir / "vectorizer.pkl")
-model = joblib.load(dir / "model.pkl")
+    if bot:
+        return bot.vectorizer, bot.model, bot.labels, bot.intents
 
-
-# ======== load the label to intent =================
-
-label_to_intent = json.load(open(dir / "label_to_intents.json"))
+    return None
 
 
-# ========= load the akiba.json ======================
-
-master_json = json.load(open(dir / "fakate.json"))
-
-
-def construct_answer(intent):
-    return "".join(master_json["Intents"][intent]["Answers"])
+def construct_answer(botname, intent):
+    _, _, _, intents = v_m(botname)
+    return "".join(intents["Intents"][intent]["Answers"])
 
 
-def answer_now(message):
+def answer_now(botname, message):
+    vectorizer, model, label_to_intent, intent = v_m(botname)
+    # print(label_to_intent, intent)
     my_question = vectorizer.transform([message]).toarray()
     label = model.predict(my_question)[0]
     intent = label_to_intent.get(str(label))
-    return intent, construct_answer(intent)
+    return intent, construct_answer(botname, intent)
 
 
-def answer_options(intent, option_number):
-    return "".join(master_json["Options"][intent][str(option_number)])
+def answer_options(botname, intent, option_number):
+    _, _, _, intents = v_m(botname)
+    return "".join(intents["Options"][intent][str(option_number)])
 
 
 # print(answer_now("Hi"))
