@@ -22,7 +22,7 @@ class TestBotConsumer(WebsocketConsumer):
 
                 # handle questions
                 print(text_data_json)
-                answer = answer_now(text_data_json["botname"], text_data_json["question"])
+                _, answer = answer_now(text_data_json["botname"], text_data_json["question"])
                 reply = {
                     "type":"a",
                     "answer": answer
