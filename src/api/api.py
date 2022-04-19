@@ -115,7 +115,20 @@ class RegisterNonLoginUserApiView(APIView):
 class UserRegistrationApiView(PublicApiMixin, ApiErrorsMixin, APIView):
 
     """
-        User Api View class
+        ### User Registration Api View class \\n
+        #### post object \\n
+
+        ```
+        {
+            "services":["service_id_1","service_id_2"],
+            "email":"example@gmail.com",
+            "phone":"value",
+            "first_name":"value",
+            "last_name":"value",
+            "password":"value"
+        }
+        ```
+
     """
     
     class InputSerializer(serializers.Serializer):

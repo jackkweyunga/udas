@@ -37,14 +37,17 @@ class RSAKeys():
         
     def print_keys(self):
         
-        print(f"""
-              Public key
+        # print(f"""
+        #       Public key
               
-              {self.public}
+        #       {self.public}
               
               
-              Private key
+        #       Private key
               
-              {self.private}
+        #       {self.private}
               
-              """)
+        #       """)
+
+        pass
+    

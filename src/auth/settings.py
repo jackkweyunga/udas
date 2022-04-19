@@ -250,7 +250,8 @@ JWT_AUTH = {
     'JWT_ALGORITHM': 'RS256',
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'utils.selectors.jwt_response_payload_handler',
     'JWT_AUTH_COOKIE': 'jwt_token',
-    'JWT_AUTH_COOKIE_SAMESITE': 'None'
+    'JWT_AUTH_COOKIE_SAMESITE': 'None',
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
 # Login settings
