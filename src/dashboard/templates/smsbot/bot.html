@@ -1,0 +1,66 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container bg-light">
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>
+                        <i class="bi bi-envelope"></i>
+                        {{ bot }}
+                    </h5>
+                    <hr>
+                    <div class=" mt-3">
+                        <h5>send a test sms </h5>
+                        <form action="{% url 'send-test-sms' %}" method="post"> {% csrf_token %}
+                            <input type="number" name="bot_id" hidden value="{{ bot.id }}">
+                            <div class="form-group">
+                                <label for="to">To</label> <br>
+                                <input type="text" name="to" required class="form-control">
+
+                                <label for="">
+                                    Ndugu mteja <br>
+                                    Karibu Fakate. <br>
+                                    Seheme ambayo utapata kazi sahihi kwa haraka.
+                                </label>
+                                <textarea placeholder="message" name="message" required class="form-control" id="" cols="20" rows="5">
+                                </textarea>
+                                <small class="help-text">use comma(s) to separate multiple emails</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                send <i data-feather="send" class="mx-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-8">
+            something
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}

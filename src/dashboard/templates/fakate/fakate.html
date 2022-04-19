@@ -1,0 +1,267 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block styles %}
+
+{% load static%}
+<link href="{% static 'jsoneditor/css/jsoneditor.css' %}" rel="stylesheet" type="text/css">
+
+<style>
+    #intents_jsoneditor {
+        width: 100%;
+        height: 500px;
+    }
+
+
+    #message-box {
+        width: 100%;
+        height: 350px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+        display: flex;
+        flex-direction: column-reverse;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    #sent-msg,
+    #rcv-msg {
+        width: 100%;
+        margin: 5px;
+    }
+
+    #sent-msg span {
+        padding: 10px;
+        background-color: rgba(192, 192, 192, 0.65);
+        color: rgb(12, 4, 4);
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: small;
+    }
+
+    #rcv-msg span {
+        padding: 10px;
+        background-color: #3883FA;
+        color: #FFFFFF;
+        font-weight: 500;
+        border-radius: 10px;
+        font-size: small;
+    }
+
+    #sent-msg {
+        display: flex;
+        justify-content: flex-start;
+        margin: 5px;
+    }
+
+    #rcv-msg {
+        display: flex;
+        justify-content: flex-end;
+        margin: 5px;
+    }
+
+    #d {
+        font-size: small;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block main %}
+
+<div class="container bg-light">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <small>
+                <h2>
+                    {{ b_data }}
+                </h2>
+            </small>
+            <small>
+                Test ground
+                <small id="socket_connection"></small>
+            </small>
+            <hr>
+            <table class="table">
+                <tr class="w-100">
+                    <div class="d-flex flex-column w-100">
+                        <div class="row shadow-sm">
+                            <div class="col bg-white" id="message-box">
+
+                            </div>
+                        </div>
+                        <div class="row shadow-sm">
+                            <div class="col p-2 d-flex justify-content-between w-100 bg-white">
+                                <input id="q" class="d-flex form-control" type="text" name="q" id="">
+
+                                <button id="qbtn" class="btn bnt-sm d-flex">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <div class="d-flex w-100 justify-content-between">
+                                    <small>Intents</small>
+                                    <span id="intents-loader"></span>
+                                </div>
+                                <hr>
+                                <div id="intents_jsoneditor" class="mb-3"></div>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+{% load static%}
+<script src="{% static 'jsoneditor/js/jsoneditor.js' %}"></script>
+
+<script>
+    // create the editor
+    const intents = document.querySelector("#intents_jsoneditor")
+    var intents_loader = document.querySelector("#intents-loader")
+
+    const options = {
+        mode: 'code'
+    }
+
+    const intents_editor = new JSONEditor(intents, options)
+
+    intentsData = JSON.parse("{{b_data_intents | escapejs}}");
+    intents_editor.set(intentsData)
+
+    // get json
+
+
+    var bot_id = '{{b_data.id}}';
+    // console.log(bot_id);
+
+    // Web sockets
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/bot/');
+
+    var connecting_string = (s = 'Loading...') => {
+        console.log("in here")
+        return `<span class="text-success"> ${s} <i class="fa fa-check"></i></span>`;
+    }
+
+    var connected_string = (s = 'connected') => {
+        return `<span class="text-success"> ${s} <i class="fa fa-check"></i></span>`;
+    }
+
+    var connectLoad = (string) => {
+        var cshow = document.querySelector("#socket_connection");
+        cshow.innerHTML = string;
+    }
+
+    var intentsLoad = (string) => {
+        intents_loader.innerHTML = string;
+    }
+
+    socket.onopen = function open() {
+        console.log("Web socket connection started");
+        toSend = JSON.stringify({
+            "id": bot_id
+        })
+        connectLoad(connected_string())
+        socket.send(toSend)
+
+    }
+
+
+    if (socket.readyState == WebSocket.OPEN) {
+        socket.onopen();
+    }
+
+    intents.addEventListener('keyup', (evt) => {
+        console.log("saving intents");
+        
+        try {
+            intentsLoad(connected_string("saved"))
+            var updatedIntents = intents_editor.get()
+            var toSend = JSON.stringify({
+                "type": "intents",
+                "data": updatedIntents,
+                "botname": "{{ b_data }}"
+            })
+            socket.send(toSend)
+            console.log(updatedIntents)
+        } catch (err) {
+            console.log(err);
+        }
+    })
+
+    var qbtn = document.querySelector("#qbtn")
+    var q = document.getElementById("q")
+    var msgbox = document.getElementById("message-box")
+
+    qbtn.addEventListener('click', (evt) => {
+        // console.log(q.value)
+
+        var sentmsg = document.createElement("div")
+        sentmsg.id = "sent-msg"
+        sentmsg.innerHTML = `<span>${q.value}</span>`
+        msgbox.prepend(sentmsg)
+
+        var toSend = JSON.stringify({
+            "type": "q",
+            "botname": "{{ b_data }}",
+            "question": q.value
+        })
+        socket.send(toSend)
+    })
+
+    socket.onmessage = (e) => {
+        console.log(e.data)
+
+        e = JSON.parse(e.data)
+
+        switch (e["type"]) {
+
+            case "a": // received an answer
+                var rcvmsg = document.createElement("div")
+                rcvmsg.id = "rcv-msg"
+                s = e["answer"].toString().replaceAll('\n','<br>')
+                rcvmsg.innerHTML = `<span>${s}</span>`
+                msgbox.prepend(rcvmsg)
+                break;
+
+            case "intents": // received new intents
+                // console.log(e["status"])
+                intentsLoad(connected_string("saved"))
+                break;
+
+            default:
+                break;
+
+        }
+
+    }
+
+
+</script>
+
+{% endblock %}

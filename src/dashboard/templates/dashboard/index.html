@@ -1,0 +1,76 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block scripts%}
+
+<script>
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/notify/');
+
+    socket.onopen = function open() {
+        console.log("Web socket connection started");
+    }
+
+    if (socket.readyState == WebSocket.OPEN) {
+        socket.onopen();
+    }
+</script>
+
+{% endblock %}
+
+
+
+
+{% block main %}
+
+<div class='container'>
+
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <small class="w-100 text-center">{{ n_services }} Services</small>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <small class="w-100 text-center">{{ n_users }} Users</small>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <small class="w-100 text-center">{{ n_emails }} Emails</small>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <small>System Logs</small>
+                    <hr>
+                    <div class="d-flex flex-column">
+                        {% for log in sys_logs%}
+                        {% if log.log_level == 1%}
+                        <span class=" px-2 py-3">
+                            <i class="fa fa-exclamation-triangle text-danger mr-2"></i>
+                            <small>{{log}}</small>
+                        </span>
+                        {% else %}
+                        <span class=" px-2 py-3">
+                            <i class="fa fa-info-circle text-primary mr-2"></i>
+                            <small>{{log}}</small>
+                        </span>
+                        {% endif %}
+                        {%endfor%}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

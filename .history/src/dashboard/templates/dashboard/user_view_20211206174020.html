@@ -1,0 +1,79 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container-fluid bg-light ">
+
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <!-- user details  -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <i style="font-size: la;" class="bi bi-person"></i>
+                        </div>
+                        <div class="col-md-8">
+                            <h5>{{ selected_user }}</h5>
+                            <p>{{ selected_user.first_name}} {{ selected_user.last_name}}</p>
+                            <p>
+                                last login {{ selected_user.last_login }}
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- services used  -->
+                    <h5>Services used</h5>
+                    <hr>
+                    No services used
+                    <hr>
+
+                    <!-- user subscriptions  -->
+                    <h5> User subscriptions </h5>
+                    <hr>
+                    No suscriptions
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h4> User Logs </h4>
+            <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for email in emails %}
+                    <tr>
+                        <td></td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container bg-light">
+
+
+    <nav class="nav nav-list py-2">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <a role="button" class=" m-0 shadow-sm btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#modelId">
+                <i class="bi bi-plus mx-2"></i>
+                Add fakate
+            </a>
+            
+            <span class="">
+                {{count}} - data(s)
+            </span>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col">
+            <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>
+                            <small>Training Data</small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in TrainingData %}
+                    <tr class="d-flex">
+                        <td class="d-flex w-100 m-0 p-0">
+                            <a href="{% url 'fakate-view' data.id %}" style="text-decoration: none;" class="d-flex w-100 p-2">
+                                {{ data }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Data</h5>
+                <button type="button" class="btn-close btn btn-icon" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-window-close"></i>
+                </button>
+
+            </div>
+            <form action="{% url 'fakate' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="text" required placeholder="name or id | unique" class="form-control mb-3" name="name"
+                        id="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}

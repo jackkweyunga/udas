@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html"%}
+
+{% block content %}
+
+<div class="container shadow d-flex m-3 flex-column flex-1">
+    {% include "dashboard/components/janjas_logo.html"%}
+    <form action="{% url 'login'%}" class="form bg-white p-3 m-3 shadow" method="post" style="max-width: 420px;min-width: 320px;">
+        
+        {% csrf_token %}
+
+        <div class="mb-3 input-group">
+            <label for="" class="input-group-text">username</label>
+            <input type="text" name="username" id="" class="form-control" placeholder="" >
+        </div>
+
+        <div class="mb-3 input-group">
+            <label for="" class="input-group-text">password</label>
+            <input type="password" name="password" id="" class="form-control" placeholder="" aria-describedby="helpId">
+        </div>
+
+        <div class="mb-3 d-flex justify-content-center align-items-center">
+            <button type="submit" class="btn btn-primary">LOGIN</button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

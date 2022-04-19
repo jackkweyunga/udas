@@ -1,0 +1,94 @@
+{% extends 'admin/base.html' %}
+
+{% block extrahead %}{{ block.super }}
+{% load static %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<style>
+  
+ /* Bootstrap issues with admin  */
+  * {
+    box-sizing: unset;
+  }
+  .collapse {
+    display: block !important;
+  }
+
+  div.module caption {
+    caption-side: top !important;
+  }
+  
+</style>
+
+<link rel="icon" href="{% static 'favicon.ico'%}" type="image/gif" sizes="16x16"> 
+
+<style>
+  /* VARIABLE DEFINITIONS */
+:root {
+  --primary: #009cb6;
+  --secondary: #018197;
+  --accent: #f5dd5d;
+  --primary-fg: #EEEEEE;
+
+  --body-fg: #333;
+  --body-bg: #FFFFFF;
+  --body-quiet-color: #666;
+  --body-loud-color: #000;
+
+  --header-color: #ffc;
+  --header-branding-color: var(--accent);
+  --header-bg: var(--secondary);
+  --header-link-color: var(--primary-fg);
+
+  --breadcrumbs-fg: #c4dce8;
+  --breadcrumbs-link-fg: var(--body-bg);
+  --breadcrumbs-bg: var(--primary);
+
+  --link-fg: #447e9b;
+  --link-hover-color: #036;
+  --link-selected-fg: #5b80b2;
+
+  --hairline-color: #e8e8e8;
+  --border-color: #EEEEEE;
+
+  --error-fg: #ba2121;
+
+  --message-success-bg: #dfd;
+  --message-warning-bg: #ffc;
+  --message-error-bg: #ffefef;
+
+  --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+  --selected-bg: #e4e4e4; /* E.g. selected table cells */
+  --selected-row: #ffc;
+
+  --button-fg: #fff;
+  --button-bg: var(--primary);
+  --button-hover-bg: #609ab6;
+  --default-button-bg: var(--secondary);
+  --default-button-hover-bg: #205067;
+  --close-button-bg: #888; /* Previously #bbb, contrast 1.92 */
+  --close-button-hover-bg: #747474;
+  --delete-button-bg: #ba2121;
+  --delete-button-hover-bg: #a41515;
+
+  --object-tools-fg: var(--button-fg);
+  --object-tools-bg: var(--close-button-bg);
+  --object-tools-hover-bg: var(--close-button-hover-bg);
+}
+
+body {
+  background-color: #EEEEEE;
+}
+
+
+  #id_username {
+    color: #000;
+  }
+
+  h1,h2,h3 {
+    font-size: large;
+  }
+</style>
+<script>window.CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/';</script>
+
+{% endblock %}

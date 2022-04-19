@@ -1,0 +1,54 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+
+
+{% block main %}
+
+<div class="container bg-light card">
+
+
+    <div class="row g-3">
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-8">
+            <table id="emails-list" class="table table-bordered table-striped primary bg-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for email in emails %}
+                    <tr>
+                        <td></td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(function () {
+        $('#emails-list').DataTable();
+    });
+</script>
+
+{% endblock %}
