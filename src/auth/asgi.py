@@ -9,14 +9,17 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 
 import os
 
+import django
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-import authnotifications.routing
-import fakate.routing
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'auth.settings')
+django.setup()
+
+import fakate.routing
+import authnotifications.routing
 
 routes = authnotifications.routing.websocket_urlpatterns \
     + fakate.routing.websocket_urlpatterns
