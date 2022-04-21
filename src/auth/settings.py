@@ -106,6 +106,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_COOKIE_NAME = config("ENV", default="dev")+'-csrftoken'
+CSRF_TRUSTED_ORIGINS = ['https://auth.janjas.ml']
 
 ROOT_URLCONF = 'auth.urls'
 
@@ -279,6 +280,7 @@ TWILIO = {
     'SERVICE_ID': config('SERVICE_ID')
 }
 
+
 # CORS settings
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -286,6 +288,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # dynamic emailing
 EMAIL_BACKEND = 'utils.email_backend.ConfiguredEmailBackend'
+
 
 EMAIL_TEMPLATES_TYPES = {
     "follow_up":"email/custom_templates/follow_up_email_template.html"
